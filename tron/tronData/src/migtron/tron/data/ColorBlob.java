@@ -5,8 +5,8 @@
 package migtron.tron.data;
 
 import java.awt.Point;
-import migtron.tron.util.color.RGBColor;
-import migtron.tron.util.math.Vec3f;
+import migtron.tron.math.color.RGBColor;
+import migtron.tron.math.Vec3f;
 
 /**
 * This class represents a colored blob.

@@ -8,22 +8,22 @@ import java.awt.geom.Point2D.Float;
 import java.awt.Point;
 import java.util.Arrays;
 
-import migtron.tron.util.math.Coordinates;       
-import migtron.tron.util.math.Ellipse;
-import migtron.tron.util.math.Sampling;
+import migtron.tron.math.Coordinates;       
+import migtron.tron.math.Ellipse;
+import migtron.tron.math.Sampling;
 
 /**
-* Test class for migron.tron.util.math package.
+* Test class for migron.tron.math package.
 * @author albarral
  */
 
-public class TestUtilMath
+public class TestMath
 {
     String modName;
     
-    public TestUtilMath()
+    public TestMath()
     {
-        modName = "TestUtilMath";
+        modName = "TestMath";
     }
 
     public void makeTest()

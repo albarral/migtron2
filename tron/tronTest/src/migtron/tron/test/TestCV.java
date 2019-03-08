@@ -13,7 +13,7 @@ import migtron.tron.cv.Mask;
 import migtron.tron.cv.MaskDrawing;
 import migtron.tron.cv.OpenCV;
 import migtron.tron.util.display.Display;
-import migtron.tron.util.math.Ellipse;
+import migtron.tron.math.Ellipse;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;

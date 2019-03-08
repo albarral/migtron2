@@ -2,7 +2,7 @@
  *  Copyright (C) 2019 by Migtron Robotics   
  *  albarral@migtron.com
  */
-package migtron.tron.util.math;
+package migtron.tron.math;
 
 import java.awt.Point;
 import java.awt.geom.Point2D.Float;

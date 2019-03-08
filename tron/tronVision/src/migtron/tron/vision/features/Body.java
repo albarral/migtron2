@@ -6,7 +6,7 @@ package migtron.tron.vision.features;
 
 import migtron.tron.cv.Mask;
 import migtron.tron.data.ColorBlob;
-import migtron.tron.util.math.Ellipse;
+import migtron.tron.math.Ellipse;
 
 import org.opencv.core.Mat;
 

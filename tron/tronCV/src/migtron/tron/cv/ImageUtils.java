@@ -10,8 +10,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
-import migtron.tron.util.math.Ellipse;
-import migtron.tron.util.math.Coordinates;
+import migtron.tron.math.Ellipse;
+import migtron.tron.math.Coordinates;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;

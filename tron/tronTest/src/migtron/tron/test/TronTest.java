@@ -21,7 +21,7 @@ public class TronTest {
         TestUtilDisplay testUtilDisplay = new TestUtilDisplay();
         //testUtilDisplay.makeTest();                
 
-        TestUtilMath testUtilMath = new TestUtilMath();
+        TestMath testUtilMath = new TestMath();
         //testUtilMath.makeTest();
     }
     

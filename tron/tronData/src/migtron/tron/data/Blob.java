@@ -7,8 +7,8 @@ package migtron.tron.data;
 import java.awt.geom.Point2D.Float;
 import java.awt.Point;
 
-import migtron.tron.util.math.Ellipse;
-import migtron.tron.util.math.Vec3f;
+import migtron.tron.math.Ellipse;
+import migtron.tron.math.Vec3f;
 
 /**
 * This class represents a blob, the basic visual entity in the tron system.

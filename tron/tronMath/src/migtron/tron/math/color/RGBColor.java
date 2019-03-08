@@ -2,9 +2,9 @@
  *  Copyright (C) 2019 by Migtron Robotics   
  *  albarral@migtron.com
  */
-package migtron.tron.util.color;
+package migtron.tron.math.color;
 
-import migtron.tron.util.math.Vec3f;
+import migtron.tron.math.Vec3f;
 
 /**
 * Utility class to implement RGB color comparison and conversion to other color spaces.

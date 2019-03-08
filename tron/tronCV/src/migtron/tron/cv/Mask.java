@@ -7,8 +7,8 @@ package migtron.tron.cv;
 import java.awt.geom.Point2D.Float;
 import java.awt.Point;
 
-import migtron.tron.util.math.Ellipse;
-import migtron.tron.util.math.Vec3f;
+import migtron.tron.math.Ellipse;
+import migtron.tron.math.Vec3f;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
