@@ -4,6 +4,7 @@
  */
 package migtron.tron.math.color;
 
+import migtron.tron.math.Angle;
 import migtron.tron.math.Vec3f;
 
 /**
@@ -12,119 +13,107 @@ import migtron.tron.math.Vec3f;
  */
 
 public class HSVColor
-{
-    private int sameDist;                      // RGB distance at which two colors are considered the same
-    private int similarDist;                    // RGB distance at which two colors are considered similar
-    private int sameDistSquare;                // square of sameDist
-    private int similarDistSquare;              // square of similarDist
-    public static final float RED_INTENSITY = 0.2989f;
-    public static final float GREEN_INTENSITY = 0.5870f;
-    public static final float BLUE_INTENSITY = 0.1140f;
+{    
+    public static final int SAT_RANGE = 256;
+    public static final int VAL_RANGE = 256;
+    public static final int SAT_GRAY = 50;	// under this saturation all colors are considered grey
+    public static final int VAL_DARK = 50; 	// under this value all colors are considered black
+    public static final float DIST_SAME_COLOR = 1.0f;  // maximum distance at which 2 HSV colors can be considered the same
+    // discriminance level for color comparison
+    public enum eDiscriminance {
+     eDISC_HIGH,
+     eDISC_LOW,
+    };
     
+    eDiscriminance discLevel;
+    HSVDiscriminance hsvDisc;
+    private float tab_gray_correction[];    // color correction table for grey saturations
+    private float tab_dark_correction[];	 // color correction table for dark values
+                
+    public HSVColor(eDiscriminance discLevel)
+    {
+        this.discLevel = discLevel;
+        switch (discLevel)
+        {
+            case eDISC_HIGH:
+                hsvDisc = new HSVDiscriminance(10.0f, 0.25f, 0.25f);
+                break;
+            case eDISC_LOW:
+                hsvDisc = new HSVDiscriminance(20.0f, 0.50f, 0.50f);
+                break;
+        }
+        
+        tab_gray_correction = new float[SAT_RANGE];
+        tab_dark_correction = new float[VAL_RANGE];
+        initCorrectionTables();       
+    }
+
     public HSVColor()
     {
-        // we use 20 as the default RGB color tolerance
-        this(20, 20);
+        // high discriminance used by default
+        this(eDiscriminance.eDISC_HIGH);
     }
     
-    public HSVColor(int sameDist, int similarDist)
-    {
-        this.sameDist = sameDist;
-        this.similarDist = similarDist;
-        updateSquares();
-    }
-
-    public int getSameDist() {return sameDist;};
-    public int getSimilarDist() {return similarDist;};
-    public int getSameDistSqr() {return sameDistSquare;};
-    public int getSimilarDistSqr() {return similarDistSquare;};
+    public eDiscriminance getDiscriminanceLevel() {return discLevel;};
+    public HSVDiscriminance getDiscriminance() {return hsvDisc;};
     
-    public void setSameDist(int value)
-    {
-        sameDist = value;
-        updateSquares();
-    }
 
-    public void setSimilarDist(int value)
+    // precalculate the values of the color correction tables
+    private void initCorrectionTables()
     {
-        similarDist = value;
-        updateSquares();
-    }
-
-    private void updateSquares()
-    {
-        sameDistSquare = sameDist*sameDist;
-        similarDistSquare = similarDist*similarDist;        
-    }
-    
-    // merge two RGB colors with specified weight, the resulting color is returned
-    public static Vec3f mergeValues (Vec3f color1, Vec3f color2, int q1, int q2)
-    {
-        if (q1 != 0 && q2 != 0)
+        float Kgray;
+        for (int i=0; i<tab_gray_correction.length;  i++)
         {
-            float alpha = (float)q2/(q1+q2);
-            float r = color1.data[0] + alpha * (color2.data[0] - color1.data[0]);
-            float g = color1.data[1] + alpha * (color2.data[1] - color1.data[1]);
-            float b = color1.data[2] + alpha * (color2.data[2] - color1.data[2]);
-            return new Vec3f(r, g, b);
-        }
-        else if (q1 == 0)
-            return new Vec3f(color2);
-        else if (q2 == 0)
-            return new Vec3f(color1);            
-        else
-            return new Vec3f();
-    }
-
-    // get the grayscale intensity of given RGB color.
-    public static float getIntensity(Vec3f rgbColor)
-    {	            
-        return (RED_INTENSITY * rgbColor.getX() + GREEN_INTENSITY * rgbColor.getY() + BLUE_INTENSITY * rgbColor.getZ());
-    }
-    
-    // converts given RGB color to HSV color
-    public static Vec3f toHSV(Vec3f rgbColor)
-    {
-        float r = rgbColor.getX();
-        float g = rgbColor.getY();
-        float b = rgbColor.getZ();
-
-        float min = Math.min(r, g);
-        min = Math.min(min, b);
-        float max = Math.max(r, g);
-        max = Math.max(max, b);
-
-        float hue, sat;
-        float value = max;	
-
-        if (max == 0)
-        {
-            hue = 0;
-            sat = 0;
-        }
-        else
-        {
-            float delta = max - min;
-            sat = 255 * delta / max;  
-
-            if (delta == 0)
-            {
-                hue  = 0;
-            }
+            if (i < SAT_GRAY) 
+                Kgray = 0.0f;
             else
             {
-                if (max == r) 
-                    hue = 60 * (g - b) / delta;	// between yellow & magenta
-                else if (max == g) 
-                    hue = 60 * (2 + (b - r) / delta);	// between cyan & yellow
-                else 
-                    hue = 60 * (4 + (r - g) / delta);	// between magenta & cyan
-                
-                if( hue < 0)                
-                    hue += 360;
-            }		
-        }		
-        
-        return new Vec3f(hue, sat, value);
-    }    
+                Kgray = (float)((i - SAT_GRAY) / 50.0);
+                // limit to 1
+                if (Kgray > 1.0f)
+                    Kgray = 1.0f;
+            }
+
+            tab_gray_correction[i] = Kgray;
+        }
+
+        float Kdark;
+        for (int i=0; i<tab_dark_correction.length;  i++)
+        {
+            if (i < VAL_DARK) 
+                Kdark = 0.0f;
+            else
+            {
+                Kdark = (float)((i - VAL_DARK) / 50.0);
+                // limit to 1
+                if (Kdark > 1.0f)
+                    Kdark = 1.0f;
+            }
+
+            tab_dark_correction[i] = Kdark;
+        }
+    }
+    
+    // compute the Mahalanobis distance between 2 HSV colors using HSV color discriminance
+    public float getDistance(Vec3f color1, Vec3f color2)
+    {
+        float minSat = Math.min(color1.getY(), color2.getY());
+        float minVal = Math.min(color1.getZ(), color2.getZ());
+
+        float Kgray = tab_gray_correction[(int)minSat];  // reduce H influence if gray region or pixel
+        float Kdark = tab_dark_correction[(int)minVal];  // reduce H and S influence if dark region or pixel  
+
+        // obtain discriminance components
+        Vec3f disc = hsvDisc.getDiscriminance(color1, color2);
+
+        // use discriminance and correction factors
+        float dif_hue = Angle.cyclicDifference(color1.getX() - color2.getX()); // cyclic hue correction
+        dif_hue = Kgray * Kdark * dif_hue / disc.getX();
+        float dif_sat = Kdark * (color1.getY() - color2.getY()) / disc.getY();
+        float dif_val = (color1.getZ() - color2.getZ()) / disc.getZ();
+
+        // mahalanobis distance (with null cross-covariances)
+        float dist = (float)Math.sqrt(dif_hue*dif_hue + dif_sat*dif_sat + dif_val*dif_val);  
+        return dist;
+    }
 }
