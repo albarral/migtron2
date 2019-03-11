@@ -14,6 +14,7 @@ import migtron.tron.math.Vec3f;
 
 public class HSVColor
 {    
+    public static final float HUE_SECTOR = 60.0f;
     public static final int SAT_RANGE = 256;
     public static final int VAL_RANGE = 256;
     public static final int SAT_GRAY = 50;	// under this saturation all colors are considered grey
@@ -107,13 +108,78 @@ public class HSVColor
         Vec3f disc = hsvDisc.getDiscriminance(color1, color2);
 
         // use discriminance and correction factors
-        float dif_hue = Angle.cyclicDifference(color1.getX() - color2.getX()); // cyclic hue correction
-        dif_hue = Kgray * Kdark * dif_hue / disc.getX();
-        float dif_sat = Kdark * (color1.getY() - color2.getY()) / disc.getY();
-        float dif_val = (color1.getZ() - color2.getZ()) / disc.getZ();
+        float hueDif = Angle.cyclicDifference(color1.getX() - color2.getX()); // cyclic hue correction
+        hueDif = Kgray * Kdark * hueDif / disc.getX();
+        float satDif = Kdark * (color1.getY() - color2.getY()) / disc.getY();
+        float valDif = (color1.getZ() - color2.getZ()) / disc.getZ();
 
         // mahalanobis distance (with null cross-covariances)
-        float dist = (float)Math.sqrt(dif_hue*dif_hue + dif_sat*dif_sat + dif_val*dif_val);  
+        float dist = (float)Math.sqrt(hueDif*hueDif + satDif*satDif + valDif*valDif);  
         return dist;
+    }
+    
+    // converts given HSV color to RGB color
+    public static Vec3f toRGB(Vec3f hsvColor)
+    {
+        // saturated colors
+        if (hsvColor.getY() != 0.0f)      
+        {
+            float hueFactor = hsvColor.getX() / HUE_SECTOR;
+            int hueSector = (int)hueFactor;
+            float x = hueFactor - hueSector;
+            float S = hsvColor.getY()/SAT_RANGE;
+            float V = hsvColor.getZ()/VAL_RANGE;
+            float v1 = V * ( 1.0f - S );
+            float v2 = V * ( 1.0f - S*x);
+            float v3 = V * ( 1.0f - S*(1.0f-x));
+            float r, g, b;
+
+            switch (hueSector)
+            {
+                // red dominance
+                case 5:
+                    r = V;
+                    g = v1;
+                    b = v2;
+                    break;
+                case 0:
+                    r = V;
+                    g = v3; 
+                    b = v1; 
+                    break;
+                // green dominance
+                case 1:
+                    r = v2;
+                    g = V;
+                    b = v1; 
+                    break;
+                case 2:
+                    r = v1;
+                    g = V;
+                    b = v3;
+                    break;
+                // blue dominance
+                case 3:
+                    r = v1;
+                    g = v2;
+                    b = V;
+                    break;
+                case 4:
+                    r = v3;
+                    g = v1;
+                    b = V;
+                    break;
+                default:
+                    r = g = b = 0.0f;
+            }
+            
+            return new Vec3f(r * 255, g * 255, b * 255);
+        }
+        // pure grey colors
+        else
+        {
+            float value = hsvColor.getZ();
+            return new Vec3f(value, value, value);
+        }
     }
 }

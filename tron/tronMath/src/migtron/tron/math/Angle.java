@@ -14,16 +14,16 @@ public class Angle
     public static float inLimits(float angle)
     {   
         // if too big angle, reduce it below 360
-        if (angle >= 360.0)
+        if (angle >= 360.0f)
         {
-            while (angle >= 360.0)
-                angle -= 360.0;
+            while (angle >= 360.0f)
+                angle -= 360.0f;
         }
         // if negative angle, increase it above 0
-        else if (angle < 0.0)
+        else if (angle < 0.0f)
         {
-            while (angle < 0.0)
-                angle += 360.0;
+            while (angle < 0.0f)
+                angle += 360.0f;
         }
 
         return angle;    
@@ -36,7 +36,7 @@ public class Angle
             return angleDif;
         else
         {
-            return (angleDif>0.0 ? angleDif-360 : angleDif+360);
+            return (angleDif>0.0 ? angleDif-360.0f : angleDif+360.0f);
         }    
     }        
 }
