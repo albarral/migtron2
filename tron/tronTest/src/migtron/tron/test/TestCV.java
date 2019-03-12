@@ -38,10 +38,10 @@ public class TestCV
         OpenCV.activate();
 
         System.out.println(modName  + ": test start");
-        testMaskEllipse();
+//        testMaskEllipse();
 //        testMaskLines();
 //        testMaskRectangles();
-//        testMaskOperations();
+        testMaskOperations();
         System.out.println(modName  + ": test end");
     }
         

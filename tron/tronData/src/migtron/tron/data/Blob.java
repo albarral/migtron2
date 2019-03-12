@@ -21,38 +21,48 @@ public class Blob extends Ellipse implements Cloneable
     protected int mass;                  // area in pixels
     protected float shapeFactor;      // automatically computed  
     
-    public Blob(Point pos, Vec3f covs, int mass)
+    public Blob(Ellipse ellipse, int mass)
     {
-        super(new Float(pos.x, pos.y), covs);
-        this.mass = mass;    
+        super(ellipse.getPosition(), ellipse.getCovariances());
+        this.mass = mass;   
+        // shape factor automatically computed  
         updateShapeFactor();        
     }    
 
+    public Blob(Point pos, Vec3f covs, int mass)
+    {
+        this(new Ellipse(pos, covs), mass);
+    }    
+            
     public Blob()
     {
-        this(new Point(0, 0), new Vec3f(0, 0, 0), 0);
+        this(new Ellipse(), 0);
     }
 
     public Blob(Blob blob)
     {
-        this(blob.getPointPosition(), blob.getCovariances(), blob.getMass());
+        super((Ellipse)blob);
+        mass = blob.mass;
+        shapeFactor = blob.shapeFactor;
     }    
     
     @Override
     public Object clone() throws CloneNotSupportedException 
     {
+        // all members automatically copied
         return (Blob)super.clone();
+    }
+    
+    public void copy(Blob blob)
+    {
+        super.copy((Ellipse)blob);
+        mass = blob.mass;
+        shapeFactor = blob.shapeFactor;
     }
     
     public int getMass() {return mass;};
     public float getShapeFactor() {return shapeFactor;};    
     public void setMass(int value) {mass = value;};
-
-    // automatic computation of the shape factor from the ellipse main axes
-    protected void updateShapeFactor()
-    {
-        shapeFactor = computeShapeFactor();        
-    }
     
     // merge this blob with another blob
     public void merge(Blob blob2)
@@ -60,10 +70,11 @@ public class Blob extends Ellipse implements Cloneable
         int newMass = mass + blob2.getMass();
         if (newMass != 0)
         {
+            // merge ellipses
             float w1 = (float)mass / newMass;
             float w2 = (float)mass / newMass;
-            // main axes are internally recomputed
             super.mergeEllipse(blob2, w1, w2);
+            // update mass and shape factor
             mass = newMass;      
             updateShapeFactor();
         }
@@ -75,6 +86,12 @@ public class Blob extends Ellipse implements Cloneable
         super.clear();
         mass = 0;
         shapeFactor = 0f; 
+    }
+
+    // automatic computation of the shape factor from the ellipse main axes
+    protected void updateShapeFactor()
+    {
+        shapeFactor = computeShapeFactor();        
     }
 
     @Override

@@ -2,7 +2,7 @@
  *  Copyright (C) 2019 by Migtron Robotics   
  *  albarral@migtron.com
  */
-package migtron.tron.vision.features;
+package migtron.tron.vision;
 
 import migtron.tron.cv.Mask;
 import migtron.tron.data.ColorBlob;
@@ -28,16 +28,25 @@ public class Body extends ColorBlob implements Cloneable
         this.mask = new Mask(mask);
     }    
         
+    public Body(Mask mask)
+    {
+        this.mask = new Mask(mask);
+        // compute blob from mask
+        computeBlob();
+    }
+    
     public Body(Body body)
     {
-        this((ColorBlob)body, 
-                body.getMask());
+        super((ColorBlob)body);
+        mask = new Mask(body.mask);
     }    
     
     @Override
     public Object clone()
     {
         try {
+            // all members automatically copied
+            // then class members cloned for deep copy
             Body cloned = (Body)super.clone();
             cloned.mask = (Mask)mask.clone();
             return cloned;
@@ -47,26 +56,19 @@ public class Body extends ColorBlob implements Cloneable
       }                
     }
     
-    public Mask getMask() {return mask;}             
+    public Mask getMask() {return mask;}    
+    public void setMask(Mask mask)
+    {
+        this.mask = (Mask)mask.clone();
+        // recompute blob from new mask
+        computeBlob();
+    }
 
     @Override
     public void clear()
     {
         super.clear();
         mask.clear();
-    }
-
-    // new mask's area is computed
-    public void computeMass()
-    {
-        setMass(mask.computeMass());
-    }
-
-    public void computeShape()
-    {
-        Ellipse ellipse = mask.computeEllipse();
-        this.copy(ellipse);
-        updateShapeFactor();
     }
 
     public Mat computeBorderMask()
@@ -91,6 +93,15 @@ public class Body extends ColorBlob implements Cloneable
         return mask1.computeMass();
     }
 
+    // recomputes the blob from the body's mask
+    private void computeBlob()
+    {
+        Ellipse ellipse = mask.computeEllipse();
+        super.copy(ellipse);
+        setMass(mask.computeMass());
+        updateShapeFactor();
+    }
+    
     @Override
     public String toString()
     {

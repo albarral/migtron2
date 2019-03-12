@@ -16,13 +16,19 @@ public class TronTest {
     public static void main(String[] args) 
     {
         TestCV testCV = new TestCV();
-        testCV.makeTest();
+        //testCV.makeTest();
+
+        TestData testData = new TestData();
+        //testData.makeTest();
 
         TestUtilDisplay testUtilDisplay = new TestUtilDisplay();
         //testUtilDisplay.makeTest();                
 
-        TestMath testUtilMath = new TestMath();
-        //testUtilMath.makeTest();
+        TestMath testMath = new TestMath();
+        //testMath.makeTest();
+
+        TestVision testVision = new TestVision();
+        testVision.makeTest();
     }
     
 }

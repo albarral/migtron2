@@ -31,6 +31,11 @@ public class Ellipse implements Cloneable
         updateMainAxes();
     }    
 
+    public Ellipse(Point pos, Vec3f covs)
+    {
+        this(new Float(pos.x, pos.y), covs);
+    }    
+
     public Ellipse()
     {
         this(new Float(0, 0), new Vec3f(0, 0, 0));
@@ -38,12 +43,18 @@ public class Ellipse implements Cloneable
     
     public Ellipse(Ellipse ellipse)
     {
-        this(ellipse.pos, ellipse.covs);
+        pos = (Float)ellipse.getPosition().clone();
+        covs = new Vec3f(ellipse.covs);
+        width = ellipse.width;
+        height = ellipse.height;
+        angle = ellipse.angle;
     }    
     
     @Override
     public Object clone() throws CloneNotSupportedException 
     {
+        // all members automatically copied
+        // then class members cloned for deep copy
         Ellipse cloned = (Ellipse)super.clone();
         cloned.pos = (Float)pos.clone();
         cloned.covs = (Vec3f)covs.clone();
