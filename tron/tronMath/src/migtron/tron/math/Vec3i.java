@@ -44,7 +44,18 @@ public class Vec3i
         data[2] = vector2.getZ();        
     }
 
-    public float getEuclideanSqrDistance(Vec3i vector2)
+    // get euclidean square distance to an integer vector
+    public float getEuclideanSquareDistance(Vec3i vector2)
+    {
+        float x = data[0] - vector2.data[0];
+        float y = data[1] - vector2.data[1];
+        float z = data[2] - vector2.data[2];
+
+        return (x*x + y*y + z*z);        
+    }
+
+    // get euclidean square distance to a short vector
+    public float getEuclideanSquareDistance(Vec3s vector2)
     {
         float x = data[0] - vector2.data[0];
         float y = data[1] - vector2.data[1];
@@ -53,15 +64,18 @@ public class Vec3i
         return (x*x + y*y + z*z);        
     }
     
-    public float getMahalanobisSqrDistance(Vec3i vector2, Vec3f covariance)
+    // get euclidean distance to an integer vector
+    public float getEuclideanDistance(Vec3i vector2)
     {
-        float x = data[0] - vector2.data[0];
-        float y = data[1] - vector2.data[1];
-        float z = data[2] - vector2.data[2];
-
-        return ((x*x/covariance.data[0]) + (y*y/covariance.data[1]) + (z*z/covariance.data[2]));
+        return (float)Math.sqrt(getEuclideanSquareDistance(vector2));
     }
 
+    // get euclidean distance to a short vector
+    public float getEuclideanDistance(Vec3s vector2)
+    {
+        return (float)Math.sqrt(getEuclideanSquareDistance(vector2));
+    }
+    
     @Override
     public String toString()
     {
