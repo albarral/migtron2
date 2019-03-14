@@ -15,9 +15,14 @@ public class Vec3s
     public static final int SIZE = 3;
     public short[] data;
     
-    public Vec3s(short x, short y, short z)
+    public Vec3s()
     {
         data = new short[SIZE];
+    }
+
+    public Vec3s(short x, short y, short z)
+    {
+        this();
         data[0] = x;
         data[1] = y;
         data[2] = z;
