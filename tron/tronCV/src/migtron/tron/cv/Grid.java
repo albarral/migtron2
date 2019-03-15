@@ -14,8 +14,10 @@ import org.opencv.core.Rect;
 
 /**
 * Utility class to handle grids. 
-* A grid is a sampled representation of an underlying matrix.
-* A mapping is created that maps matrix positions to grid positions. The mapping also stores the node location in the grid (see eLocation values in Node class).
+* A grid is a reduced representation of an underlying matrix. It's composed by nodes, each representing a specific matrix region.
+* The grid granularity (number of nodes) is defined by the underlying matrix size and the specified sampling factor.
+* A map is used internally to rapidly map matrix coordinates to grid ones.
+* The node location (internal, border or corner) is also stored in the map to facilitate neighborhood related computations.
 * @author albarral
  */
 
@@ -23,75 +25,85 @@ public class Grid
 {
     private int w;  // width of represented matrix
     private int h;  // height of represented matrix
-    private int GRID_STEP;       // separation between grid nodes (in matrix units)
-    private int rows;       // grid rows
-    private int cols;       // grid columns
-    private Mat map_nodes;   // mapping of matrix positions to grid nodes
+    private int gridStep;       // separation between grid nodes (in matrix units)
+    private Mat mapCoordinates;   // mapping of matrix to grid coordinates
+    protected int rows;       // grid rows
+    protected int cols;       // grid columns
+    protected Node focusNode;   // node presently focused
 
-    public Grid(int w, int h, int gridStep)
+    public Grid(int w, int h, float samplingFactor)
     {
-        resize(w, h, gridStep);
-    }    
-
-    public Grid(int w, int h)
-    {
-        // default grid step 10
-        this(w, h, 10);
+        // define grid
+        define(w, h, samplingFactor);
+        // and set focus to topleft corner
+        focusNode = new Node(0, 0, computeNodeLocation(0,0));
     }    
         
     public int getRows() {return rows;};
     public int geCols() {return cols;};
-    public boolean isValid() {return (map_nodes != null);}
-    public Mat getMap() {return map_nodes;}             
+    public boolean isValid() {return (mapCoordinates != null);}
+    public Mat getMap() {return mapCoordinates;}             
     
-    private boolean resize(int img_w, int img_h, int grid_step)
+    // defines the grid for given matrix size and sampling factor
+    private boolean define(int img_w, int img_h, float samplingFactor)
     {
-        // if grid can not be represented with short precision, reject resizing
-        int division = Math.max(img_w, img_h) / grid_step;
-        if ((short)division != division)
+        // safety check
+        if (img_w > 0 && img_h > 0 && samplingFactor > 0.0f && samplingFactor < 1.0f)
         {
-            return false;
+            w = img_w;
+            h = img_h;
+            // compute grid step
+            gridStep = (int)(1.0f / Math.sqrt(samplingFactor));
+            // (+ 1) because the grid must cover the image borders
+            rows = h/gridStep + 1;	
+            cols = w/gridStep + 1;        
+
+            // check that grid can be represented with short precision
+            int maxCoordinate = Math.max(rows, cols);
+            if ((short)maxCoordinate != maxCoordinate)
+                return false;
         }
-        
-        w = img_w;
-        h = img_h;
-        GRID_STEP = grid_step;
-        // (+ 1) because the grid must cover the image borders
-        rows = img_h/GRID_STEP + 1;	
-        cols = img_w/GRID_STEP + 1;        
+        else
+            return false;
 
-        map_nodes = new Mat(h, w, CvType.CV_16UC3);     // (row, col, location)
+        //  (row, col, location) with short precision
+        mapCoordinates = new Mat(h, w, CvType.CV_16UC3);    
 
-        // build the mapping matrix
+        // build the coordinates mapping
         int row, col;
         for (int i=0; i<h; i++)
         {
-            row = Math.round((float)i / GRID_STEP);        
+            row = Math.round((float)i / gridStep);        
             
             for (int j=0; j<w; j++)
             {    
-                col = Math.round((float)j / GRID_STEP);    
+                col = Math.round((float)j / gridStep);    
 
-                short[] data = {(short)row, (short)col, (short)getNodeLocation(row, col).ordinal()};
-                map_nodes.put(row, col, data);
+                Vec3s vector = new Vec3s((short)row, (short)col, (short)computeNodeLocation(row, col).ordinal());                
+                mapCoordinates.put(row, col, vector.data);
             }
         }        
         return true;
     }
     
-    public Node focus(int x, int y)
+    // move focused node to specified matrix position
+    // returns true if node has changed, false otherwise
+    public boolean focus(int x, int y)
     {    
+        // safety check
         if (x < w && y < h)
         {
-            short[] data = new short[3];
-            map_nodes.get(y, x, data);
-            return new Node(data[0], data[1], data[2]);
+            // get node mapping
+            Vec3s vector = new Vec3s();                
+            mapCoordinates.get(y, x, vector.data);
+            // update focused node
+            return focusNode.update((int)vector.getX(), (int)vector.getY(), (int)vector.getZ());
         }
         else
-            return null;
+            return false;
     }
 
-    public Node focus(Point point)
+    public boolean focus(Point point)
     {
         return focus(point.x, point.y);
     }
@@ -107,14 +119,14 @@ public class Grid
         // translate the image window to a grid window
             
         Vec3s node1 = new Vec3s();
-        map_nodes.get(window.y, window.x, node1.data);
+        mapCoordinates.get(window.y, window.x, node1.data);
         Vec3s node2 = new Vec3s();
-        map_nodes.get(window.y + window.height, window.x + window.width, node2.data);
+        mapCoordinates.get(window.y + window.height, window.x + window.width, node2.data);
         return new Rect(node1.getY(), node1.getX(), node2.getY()-node1.getY(), node2.getX()-node1.getX());        
     }
 
-    // get node location depending on its position in the grid. 
-    private Node.eLocation getNodeLocation(int row, int col)
+    // compute node location depending on its position in the grid. 
+    private Node.eLocation computeNodeLocation(int row, int col)
     {        
         Node.eLocation location = null;
 
@@ -132,30 +144,36 @@ public class Grid
             // TOP border
             if (top)
             {
+                // left corner
                 if (left) 
-                    location = Node.eLocation.eLOC_NW;
+                    location = Node.eLocation.eLOC_TOPRIGHT;
+                // right corner
                 else if (right)
-                    location = Node.eLocation.eLOC_NE;
+                    location = Node.eLocation.eLOC_TOPLEFT;
                 else
-                    location = Node.eLocation.eLOC_N;            
+                    location = Node.eLocation.eLOC_TOP;            
             }
             // BOTTOM border
             else if (bottom)
             {
+                // left corner
                 if (left) 
-                    location = Node.eLocation.eLOC_SW;
+                    location = Node.eLocation.eLOC_BOTTOMRIGHT;
+                // right corner
                 else if (right)
-                    location = Node.eLocation.eLOC_SE;
+                    location = Node.eLocation.eLOC_BOTTOMLEFT;
                 else
-                    location = Node.eLocation.eLOC_S;                        
+                    location = Node.eLocation.eLOC_BOTTOM;                        
             }
             // MIDDLE row
             else
             {
+                // left border
                 if (left) 
-                    location = Node.eLocation.eLOC_W;
+                    location = Node.eLocation.eLOC_RIGHT;
+                // right border
                 else if (right)
-                    location = Node.eLocation.eLOC_E;            
+                    location = Node.eLocation.eLOC_LEFT;            
             }
         }   
 

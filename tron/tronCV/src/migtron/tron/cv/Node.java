@@ -13,19 +13,19 @@ import org.opencv.core.Rect;
 
 public class Node
 {
-    // node location in a grid
+    // node locations in the grid
     public enum eLocation{
          eLOC_INTERNAL,  // internal
-         eLOC_N,    // north border
-         eLOC_S,    // south border
-         eLOC_E,    // east border
-         eLOC_W,    // west border
-         eLOC_NE,   // north east corner     
-         eLOC_NW,   // north west corner
-         eLOC_SE,   // south east corner
-         eLOC_SW,  // south west corner
-         eLOC_OUT,  // out of grid
+         eLOC_TOP,    // top border
+         eLOC_BOTTOM,    // bottom border
+         eLOC_LEFT,    // left border
+         eLOC_RIGHT,    // right border
+         eLOC_TOPLEFT,   // top left corner     
+         eLOC_TOPRIGHT,   // top right corner
+         eLOC_BOTTOMLEFT,   // bottom left corner
+         eLOC_BOTTOMRIGHT  // bottom right corner
     }
+    private static final eLocation[] locations = eLocation.values();
 
     private int row;
     private int col;
@@ -43,26 +43,65 @@ public class Node
 
     public Node()
     {
-        this(0, 0, eLocation.eLOC_NE);
+        this(0, 0, eLocation.eLOC_TOPLEFT);
     }    
-    
+            
+    // obtain location enum for given location ordinal
+    public static eLocation getLocationEnum(int value)
+    {
+        if (value < locations.length)
+            return locations[value];
+        else
+            return null;
+    }
+
     public int getRow() {return row;}             
     public int getCol() {return col;} 
     public eLocation getLocation() {return location;};
     public Rect getWindow() {return window;};
         
-    public void set(int row, int col, eLocation location)
+    // update node position, return true if changed
+    public boolean updatePosition(int row, int col)
     {
-        this.row = row;
-        this.col = col;
-        // only if location changed compute the sorrounding window
-        if (location != this.location)
+        // update only if it's a different position
+        if (this.row != row || this.col != col)
+        {
+            this.row = row;
+            this.col = col;
+            return true;
+        }
+        else
+            return false;
+    }
+
+    // update node location, return true if changed
+    public boolean updateLocation(eLocation location)
+    {
+        // update only if it's a different location
+        if (this.location != location)
         {
             this.location = location;
+            // and recompute the sorrounding window
             computeWindow();
+            return true;
         }
+        else
+            return false;
     }
     
+    // update node position and location, return true if changed
+    public boolean update(int row, int col, int location)
+    {
+        if (updatePosition(row, col))
+        {            
+            // location may stay unchanged even if position changed  
+            updateLocation(getLocationEnum(location));          
+            return true;  
+        }
+        else
+            return false;
+    }
+        
     // compute sorrounding window
     private void computeWindow()
     {
@@ -75,28 +114,28 @@ public class Node
             case eLOC_INTERNAL:
                 window = new Rect(neighbour, neighbour, wide, wide);            
                 break;
-            case eLOC_N:
+            case eLOC_TOP:
                 window = new Rect(neighbour, me, wide, limited);            
                 break;
-            case eLOC_S:
+            case eLOC_BOTTOM:
                 window = new Rect(neighbour, neighbour, wide, limited);            
                 break;
-            case eLOC_E:
+            case eLOC_LEFT:
                 window = new Rect(neighbour, neighbour, limited, wide);            
                 break;
-            case eLOC_W:
+            case eLOC_RIGHT:
                 window = new Rect(me, neighbour, limited, wide);            
                 break;
-            case eLOC_NE:
+            case eLOC_TOPLEFT:
                 window = new Rect(neighbour, me, limited, limited);            
                 break;
-            case eLOC_NW:
+            case eLOC_TOPRIGHT:
                 window = new Rect(me, me, limited, limited);            
                 break;
-            case eLOC_SE: 
+            case eLOC_BOTTOMLEFT: 
                 window = new Rect(neighbour, neighbour, limited, limited);            
                 break;
-            case eLOC_SW:
+            case eLOC_BOTTOMRIGHT:
                 window = new Rect(me, neighbour, limited, limited);            
                 break;
         }                    
