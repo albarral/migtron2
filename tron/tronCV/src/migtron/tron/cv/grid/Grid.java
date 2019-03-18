@@ -2,7 +2,7 @@
  *  Copyright (C) 2019 by Migtron Robotics   
  *  albarral@migtron.com
  */
-package migtron.tron.cv;
+package migtron.tron.cv.grid;
 
 import java.awt.Point;
 
@@ -15,48 +15,51 @@ import org.opencv.core.Rect;
 /**
 * Utility class to handle grids. 
 * A grid is a reduced representation of an underlying matrix. It's composed by nodes, each representing a specific matrix region.
-* The grid granularity (number of nodes) is defined by the underlying matrix size and the specified sampling factor.
-* A map is used internally to rapidly map matrix coordinates to grid ones.
-* The node location (internal, border or corner) is also stored in the map to facilitate neighborhood related computations.
+* The grid granularity (number of nodes) is defined by the underlying matrix size and the specified reduction factor.
+* A map is used to rapidly convert matrix coordinates to grid positions.
+* The node location (internal, border or corner) is also stored in the map to quickly obtain the node's sorrounding window.
 * @author albarral
  */
 
 public class Grid
 {
-    private int w;  // width of represented matrix
-    private int h;  // height of represented matrix
-    private int gridStep;       // separation between grid nodes (in matrix units)
-    private Mat mapCoordinates;   // mapping of matrix to grid coordinates
+    private int matWidth;  // width of represented matrix
+    private int matHeight;  // height of represented matrix
+    private float reductionFactor; // reduction factor (applied to each dimension)
+    protected int gridStep;   // separation between grid nodes (in matrix units)
     protected int rows;       // grid rows
     protected int cols;       // grid columns
-    protected Node focusNode;   // node presently focused
+    private Mat mapCoordinates;   // mapping of matrix to grid coordinates
+    protected Node focusNode;   // presently focused node
 
-    public Grid(int w, int h, float samplingFactor)
+    public Grid(int w, int h, float reductionFactor)
     {
         // define grid
-        define(w, h, samplingFactor);
+        define(w, h, reductionFactor);
         // and set focus to topleft corner
         focusNode = new Node(0, 0, computeNodeLocation(0,0));
     }    
         
+    public float getReductionFactor() {return reductionFactor;};
     public int getRows() {return rows;};
     public int geCols() {return cols;};
     public boolean isValid() {return (mapCoordinates != null);}
-    public Mat getMap() {return mapCoordinates;}             
+    public Node getFocusedNode() {return focusNode;}             
     
-    // defines the grid for given matrix size and sampling factor
-    private boolean define(int img_w, int img_h, float samplingFactor)
+    // defines a grid for the given matrix size and reduction factor (applied to each dimension)
+    private boolean define(int matW, int matH, float reductionFactor)
     {
         // safety check
-        if (img_w > 0 && img_h > 0 && samplingFactor > 0.0f && samplingFactor < 1.0f)
+        if (matW > 0 && matH > 0 && reductionFactor > 0.0f && reductionFactor < 1.0f)
         {
-            w = img_w;
-            h = img_h;
+            matWidth = matW;
+            matHeight = matH;
+            this.reductionFactor = reductionFactor;
             // compute grid step
-            gridStep = (int)(1.0f / Math.sqrt(samplingFactor));
-            // (+ 1) because the grid must cover the image borders
-            rows = h/gridStep + 1;	
-            cols = w/gridStep + 1;        
+            gridStep = (int)(1.0f / reductionFactor);
+            // (+ 1) because the grid must cover both matrix borders
+            rows = matHeight/gridStep + 1;	
+            cols = matWidth/gridStep + 1;        
 
             // check that grid can be represented with short precision
             int maxCoordinate = Math.max(rows, cols);
@@ -67,15 +70,15 @@ public class Grid
             return false;
 
         //  (row, col, location) with short precision
-        mapCoordinates = new Mat(h, w, CvType.CV_16UC3);    
+        mapCoordinates = new Mat(matHeight, matWidth, CvType.CV_16UC3);    
 
         // build the coordinates mapping
         int row, col;
-        for (int i=0; i<h; i++)
+        for (int i=0; i<matHeight; i++)
         {
             row = Math.round((float)i / gridStep);        
             
-            for (int j=0; j<w; j++)
+            for (int j=0; j<matWidth; j++)
             {    
                 col = Math.round((float)j / gridStep);    
 
@@ -91,13 +94,13 @@ public class Grid
     public boolean focus(int x, int y)
     {    
         // safety check
-        if (x < w && y < h)
+        if (x < matWidth && y < matHeight)
         {
-            // get node mapping
-            Vec3s vector = new Vec3s();                
-            mapCoordinates.get(y, x, vector.data);
+            // get node position
+            Vec3s nodePos = new Vec3s();                
+            mapCoordinates.get(y, x, nodePos.data);
             // update focused node
-            return focusNode.update((int)vector.getX(), (int)vector.getY(), (int)vector.getZ());
+            return focusNode.update((int)nodePos.getX(), (int)nodePos.getY(), (int)nodePos.getZ());
         }
         else
             return false;
@@ -111,10 +114,10 @@ public class Grid
     public Rect computeGridWindow(Rect window)
     {
         // check & correct window limits for safe grid computation
-        if (window.x + window.width >= w)
-            window.width = w - window.x - 1;
-        if (window.y + window.height >= h)
-            window.height = h - window.y - 1;
+        if (window.x + window.width >= matWidth)
+            window.width = matWidth - window.x - 1;
+        if (window.y + window.height >= matHeight)
+            window.height = matHeight - window.y - 1;
 
         // translate the image window to a grid window
             
