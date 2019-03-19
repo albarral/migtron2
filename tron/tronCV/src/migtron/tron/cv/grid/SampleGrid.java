@@ -4,36 +4,37 @@
  */
 package migtron.tron.cv.grid;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
 /**
 * Extended Grid used for matrix samplings. 
-* It holds info about the number of samples used for each grid node (in a grid sized matrix).
+* It uses a samples matrix (of grid size) to store the number of samples in each node. 
+* It also uses a sampled window that reflects the part of the grid that has been sampled.
 * @author albarral
  */
 
 public class SampleGrid extends Grid
 {
     protected Mat matSamples;   // samples matrix (short precision)
+    protected Rectangle sampledWindow;   // sampled window (in grid units)
 
     public SampleGrid(int w, int h, float reductionFactor)
     {
         super(w, h, reductionFactor);
         // create grid sized matrix to store the node samples
         matSamples = Mat.zeros(rows, cols, CvType.CV_16UC1);    
+        // create empty sampled window (negative values for non-existant window)
+        sampledWindow = new Rectangle(0, 0, -1, -1);    
     }    
         
     public Mat getSamplesMatrix() {return matSamples;}
+    public Rectangle getSampledWindow() {return sampledWindow;}
     
-    // set the number of samples of the focused node
-    public void setNodeSamples(int samples)
-    {
-        short[] data = {(short)samples};
-        matSamples.put(focusNode.getRow(), focusNode.getCol(), data);        
-    }
-
     // get the number of samples of the focused node
     public short getNodeSamples()
     {
@@ -42,18 +43,30 @@ public class SampleGrid extends Grid
         return data[0];
     }
     
-    // add a number of samples to the focused node
-    public void addNodeSamples(int samples)
+    // add a new sample to the focused node
+    public void addNodeSample()
     {
         short prevSamples = getNodeSamples();
-        setNodeSamples(prevSamples + samples);
+        setNodeSamples(prevSamples + 1);
+        // increase the sampled window
+        sampledWindow.add(focusNode.getCol(), focusNode.getRow());
     }
     
-    // clear the samples of the whole grid
-    public void clearSamples()
+    // set the number of samples of the focused node
+    private void setNodeSamples(int samples)
     {
-        if (!matSamples.empty())            
-           matSamples.setTo(new Scalar(0.0));
+        short[] data = {(short)samples};
+        matSamples.put(focusNode.getRow(), focusNode.getCol(), data);                
+    }
+    
+    // clear sample grid 
+    public void clear()
+    {
+        if (!matSamples.empty())          
+        {
+            matSamples.setTo(new Scalar(0.0));
+            sampledWindow = new Rectangle(0, 0, -1, -1);    // negative values for non-existant window
+        }
     }
 }
 							 

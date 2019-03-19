@@ -99,8 +99,8 @@ public class Grid
             // get node position
             Vec3s nodePos = new Vec3s();                
             mapCoordinates.get(y, x, nodePos.data);
-            // update focused node
-            return focusNode.update((int)nodePos.getX(), (int)nodePos.getY(), (int)nodePos.getZ());
+            // set focused node
+            return focusNode.set((int)nodePos.getX(), (int)nodePos.getY(), (int)nodePos.getZ());
         }
         else
             return false;
@@ -111,7 +111,8 @@ public class Grid
         return focus(point.x, point.y);
     }
 
-    public Rect computeGridWindow(Rect window)
+    // convert given window in matrix units to equivalent window in grid units
+    public Rect windowMatrix2Grid(Rect window)
     {
         // check & correct window limits for safe grid computation
         if (window.x + window.width >= matWidth)

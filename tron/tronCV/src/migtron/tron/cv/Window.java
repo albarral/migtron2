@@ -17,13 +17,13 @@ import org.opencv.core.Rect;
 public class Window 
 {
     // transform cv rectangle to java form
-    public static Rectangle getRectangle(Rect rect)
+    public static Rectangle rectangleCV2Java(Rect rect)
     {
         return new Rectangle(rect.x, rect.y, rect.width, rect.height);
     }
 
     // transform java rectangle to cv form
-    public static Rect getCVRectangle(Rectangle rectangle)
+    public static Rect rectangleJava2CV(Rectangle rectangle)
     {
         return new Rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
@@ -31,17 +31,17 @@ public class Window
     // get the rectangle resulting from the intersection of two windows
     public static Rect getIntersection(Rect window1, Rect window2)
     {
-        Rectangle rect1 = getRectangle(window1);
-        Rectangle rect2 = getRectangle(window2);        
-        return getCVRectangle(rect1.intersection(rect2));        
+        Rectangle rect1 = rectangleCV2Java(window1);
+        Rectangle rect2 = rectangleCV2Java(window2);        
+        return rectangleJava2CV(rect1.intersection(rect2));        
     }
 
     // get the rectangle resulting from the union of two windows
     public static Rect getUnion(Rect window1, Rect window2)
     {
-        Rectangle rect1 = getRectangle(window1);
-        Rectangle rect2 = getRectangle(window2);        
-        return getCVRectangle(rect1.union(rect2));        
+        Rectangle rect1 = rectangleCV2Java(window1);
+        Rectangle rect2 = rectangleCV2Java(window2);        
+        return rectangleJava2CV(rect1.union(rect2));        
     }
 
     // translate given window the specified x and y displacement
@@ -95,8 +95,8 @@ public class Window
     public static float getSeparation(Rect window1, Rect window2)
     {
         // get intersection of windows
-        Rectangle rect1 = getRectangle(window1);
-        Rectangle rect2 = getRectangle(window2);        
+        Rectangle rect1 = rectangleCV2Java(window1);
+        Rectangle rect2 = rectangleCV2Java(window2);        
         Rectangle intersection = rect1.intersection(rect2);
 
         // case 1: windows overlap -> separation 0
