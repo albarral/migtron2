@@ -8,6 +8,9 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import migtron.tron.cv.Window;
+import org.opencv.core.Rect;
+
 /**
 * Utility class to represent nodes in grids.
 * The node location in the grid (internal, border, corner ...) is used to compute the node's sorrounding window.
@@ -34,7 +37,7 @@ public class Node
     private int row;
     private int col;
     private eLocation location;       // node location in the grid
-    private Rectangle window;       // sorrounding window (in grid coordinates)
+    private Rect window;       // sorrounding window (in grid coordinates)
 
     public Node(int row, int col, eLocation location)
     {
@@ -63,7 +66,7 @@ public class Node
     public int getRow() {return row;}             
     public int getCol() {return col;} 
     public eLocation getLocation() {return location;};
-    public Rectangle getWindow() {return window;};
+    public Rect getSorroundWindow() {return window;};
     
     // set node position and location, return true if changed
     public boolean set(int row, int col, int location)
@@ -82,15 +85,16 @@ public class Node
         else
             return false;
     }
-    
-                        
+                            
     // compute node's sorround window (in grid coordinates)
     private void updateWindow()
     { 
         // take the proper sorrounding window (in node coordinates) for the node's location
-        window = new Rectangle(listSorroundWindows.get(location.ordinal()));
+        Rectangle rectangle = new Rectangle(listSorroundWindows.get(location.ordinal()));
         // and put it in grid coordinates
-        window.translate(col, row);        
+        rectangle.translate(col, row);      
+        // transform to openCV rect
+        window = Window.rectangleJava2CV(rectangle);
     }
     
     // compute the sorrounding window (in node coordinates) for a given location

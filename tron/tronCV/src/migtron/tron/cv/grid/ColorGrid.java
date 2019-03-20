@@ -4,14 +4,15 @@
  */
 package migtron.tron.cv.grid;
 
-import migtron.tron.cv.Window;
+import migtron.tron.cv.AverageCV;
 import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
 
-import java.awt.Rectangle;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
+import org.opencv.core.MatOfPoint3f;
+import org.opencv.core.Point3;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
@@ -57,15 +58,13 @@ public class ColorGrid extends SampleGrid
     // get the grid's local color, the average color of the node's neighbourhood
     public Vec3f getLocalColor()
     {
-        Rectangle window = focusNode.getWindow();
-        Rect window2 = Window.rectangleJava2CV(window);
+        Rect window = focusNode.getSorroundWindow();                
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(window));
+        MatOfInt samples = new MatOfInt(matSamples.submat(window));
         
-        Mat roiColor = matColor.submat(window2);
-        Mat roiSamples = matSamples.submat(window2);
-        
-        // TO DO ...
-        Vec3f color = new Vec3f();
-        matColor.get(focusNode.getRow(), focusNode.getCol(), color.data);        
+        Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
+        Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
+        matColor.put(focusNode.getRow(), focusNode.getCol(), color.data);        
         return color;
     }    
     
