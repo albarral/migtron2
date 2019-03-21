@@ -5,6 +5,7 @@
 package migtron.tron.test;
 
 import java.awt.image.BufferedImage;
+//import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,8 @@ import migtron.tron.cv.ImageUtils;
 import migtron.tron.cv.Mask;
 import migtron.tron.cv.MaskDrawing;
 import migtron.tron.cv.OpenCV;
+import migtron.tron.cv.grid.Matrix;
+
 import migtron.tron.util.display.Display;
 import migtron.tron.math.Ellipse;
 
@@ -41,7 +44,8 @@ public class TestCV
 //        testMaskEllipse();
 //        testMaskLines();
 //        testMaskRectangles();
-        testMaskOperations();
+//        testMaskOperations();
+          testMatrix();
         System.out.println(modName  + ": test end");
     }
         
@@ -181,6 +185,19 @@ public class TestCV
         // show masks (original and processed)
         showMasks(listMasks, "original");
         showMasks(listMasks2, "processed");
+    }    
+
+    private void testMatrix()
+    {
+        System.out.println(modName  + ".testMatrix() ...");
+
+        Matrix matrix = new Matrix(100, 100);
+        
+        for (int y=0; y<105; y++)
+        {
+            matrix.setFocus(50, y);
+            System.out.println(modName  + ": focus = " + matrix.getFocus() + ", window = " + matrix.getWindow());                    
+        }
     }    
     
     // show list of masks in a display
