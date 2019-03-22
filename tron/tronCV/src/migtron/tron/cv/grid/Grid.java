@@ -20,14 +20,14 @@ import org.opencv.core.Rect;
 * @author albarral
  */
 
-public class Grid2 extends Matrix
+public class Grid extends Matrix
 {
     private int repW;  // width of represented matrix
     private int repH;  // height of represented matrix
     private float reductionFactor; // reduction factor (applied to each dimension)
     private Mat mapCoordinates;   // mapping of matrix to grid coordinates (int precision)
 
-    public Grid2(int repW, int repH, float reductionFactor)
+    public Grid(int repW, int repH, float reductionFactor)
     {
         super((int)Math.ceil(repW*reductionFactor), (int)Math.ceil(repH*reductionFactor));
 

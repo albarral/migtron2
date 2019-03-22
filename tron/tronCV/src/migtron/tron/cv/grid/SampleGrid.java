@@ -18,7 +18,7 @@ import org.opencv.core.Scalar;
 * @author albarral
  */
 
-public class SampleGrid extends Grid2
+public class SampleGrid extends Grid
 {
     protected Mat matSamples;   // samples matrix (short precision)
     protected Rectangle sampledWindow;   // sampled window (in grid units)
