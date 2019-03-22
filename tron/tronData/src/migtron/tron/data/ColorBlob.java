@@ -66,7 +66,7 @@ public class ColorBlob extends Blob implements Cloneable
     // set the rgb color (the hsv color is automatically updated)
     public void setRGB(Vec3f color) 
     {
-        rgbColor.assign(color);
+        rgbColor.set(color);
         updateHSVColor();
     }
 
@@ -84,7 +84,7 @@ public class ColorBlob extends Blob implements Cloneable
     // automatic computation of the HSV color from the RGB color
     private void updateHSVColor()
     {
-        hsvColor.assign(RGBColor.toHSV(rgbColor));       
+        hsvColor.set(RGBColor.toHSV(rgbColor));       
     }
 
     @Override

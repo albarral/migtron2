@@ -25,7 +25,7 @@ public class Vec3f implements Cloneable
 
     public Vec3f()
     {
-        this(0.0f, 0.0f, 0.0f);
+        data = new float[SIZE];
     }    
 
     public Vec3f(Vec3f vector2)
@@ -42,20 +42,20 @@ public class Vec3f implements Cloneable
         cloned.data = this.data.clone();
         return cloned;
     }
-    
-    public void assign(Vec3f vector2)
-    {
-        data[0] = vector2.getX();
-        data[1] = vector2.getY();
-        data[2] = vector2.getZ();        
-    }
-    
+        
     public float getX() {return data[0];};
     public float getY() {return data[1];};
     public float getZ() {return data[2];};
     public void setX(float value) {data[0] = value;};
     public void setY(float value) {data[1] = value;};
     public void setZ(float value) {data[2] = value;};
+    
+    public void set(Vec3f vector2)
+    {
+        data[0] = vector2.getX();
+        data[1] = vector2.getY();
+        data[2] = vector2.getZ();        
+    }
     
     // get euclidean square distance to a float vector
     public float getEuclideanSquareDistance(Vec3f vector2)

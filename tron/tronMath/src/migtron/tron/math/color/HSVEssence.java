@@ -45,7 +45,7 @@ public class HSVEssence
 
     public void setColor(Vec3f hsvColor2)
     {
-        hsvColor.assign(hsvColor2);
+        hsvColor.set(hsvColor2);
         // automatic type computation
         computeType();
     }

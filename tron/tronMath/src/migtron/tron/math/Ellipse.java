@@ -85,7 +85,7 @@ public class Ellipse implements Cloneable
     
     public void setCovariances(Vec3f covs) 
     {
-        this.covs.assign(covs);
+        this.covs.set(covs);
         // on every covariance change, the main axes are recomputed
         updateMainAxes();
     }

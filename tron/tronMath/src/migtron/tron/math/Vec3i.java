@@ -10,7 +10,7 @@ package migtron.tron.math;
  * Direct access granted to vector components.
  * @author albarral
  */
-public class Vec3i
+public class Vec3i implements Cloneable
 {
     public static final int SIZE = 3;
     public int[] data;
@@ -22,12 +22,25 @@ public class Vec3i
         data[1] = y;
         data[2] = z;
     }
+
+    public Vec3i()
+    {
+        data = new int[SIZE];
+    }
     
     public Vec3i(Vec3i vector2)
     {
         this(vector2.getX(), 
                 vector2.getY(), 
                 vector2.getZ());
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException 
+    {
+        Vec3i cloned = (Vec3i)super.clone();
+        cloned.data = this.data.clone();
+        return cloned;
     }
     
     public int getX() {return data[0];};
