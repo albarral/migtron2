@@ -27,11 +27,11 @@ public class ColorGrid extends SampleGrid
 {
     protected Mat matColor;   // RGB color matrix (float precision)
 
-    public ColorGrid(int w, int h, float reductionFactor)
+    public ColorGrid(int repW, int repH, float reductionFactor)
     {
-        super(w, h, reductionFactor);
+        super(repW, repH, reductionFactor);
         // create grid sized matrix to store the node colors
-        matColor = Mat.zeros(rows, cols, CvType.CV_32FC3);    
+        matColor = Mat.zeros(h, w, CvType.CV_32FC3);    
     }    
         
     public Mat getColorMatrix() {return matColor;}
@@ -40,7 +40,7 @@ public class ColorGrid extends SampleGrid
     public Vec3f getNodeColor()
     {
         Vec3f color = new Vec3f();
-        matColor.get(focusNode.getRow(), focusNode.getCol(), color.data);        
+        matColor.get(focus.y, focus.x, color.data);        
         return color;
     }    
     
@@ -50,7 +50,7 @@ public class ColorGrid extends SampleGrid
         // set the node's average color with the new sample
         Average3f avgColor = new Average3f(getNodeColor(), getNodeSamples());
         avgColor.updateWithSample(color);
-        matColor.put(focusNode.getRow(), focusNode.getCol(), avgColor.data);        
+        matColor.put(focus.y, focus.x, avgColor.data);        
         // and set the number of samples in the node
         addNodeSample();
     }
@@ -58,13 +58,13 @@ public class ColorGrid extends SampleGrid
     // get the grid's local color, the average color of the node's neighbourhood
     public Vec3f getLocalColor()
     {
-        Rect window = focusNode.getSorroundWindow();                
-        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(window));
-        MatOfInt samples = new MatOfInt(matSamples.submat(window));
+        Rect windowNeighbourhood = getWindowCV();                
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(windowNeighbourhood));
+        MatOfInt samples = new MatOfInt(matSamples.submat(windowNeighbourhood));
         
         Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
         Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
-        matColor.put(focusNode.getRow(), focusNode.getCol(), color.data);        
+        matColor.put(focus.y, focus.x, color.data);        
         return color;
     }    
     

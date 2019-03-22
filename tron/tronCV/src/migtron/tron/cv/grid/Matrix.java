@@ -38,21 +38,21 @@ public class Matrix
 
     public Matrix(int w, int h)
     {
-        // safety check
-        if (w > 0 && h > 0)
-        {
-            this.w = w;
-            this.h = h;
-            focus = new Point();
-            window = new Rectangle();
-            relWindow = new Rectangle();
-            xLocation = null;
-            yLocation = null;
-            xLocations = new eLocation[w];
-            yLocations = new eLocation[h];
-            // define the prefixed locations
-            informLocations();
-        }
+        // safety check        
+        if (w <= 0 || h <= 0)
+            throw new java.lang.IllegalArgumentException("Matrix dimensions must be positive");
+        
+        this.w = w;
+        this.h = h;
+        focus = new Point();
+        window = new Rectangle();
+        relWindow = new Rectangle();
+        xLocation = null;
+        yLocation = null;
+        xLocations = new eLocation[w];
+        yLocations = new eLocation[h];
+        // define the prefixed locations
+        informLocations();
     }    
         
     public int geWidth() {return w;};
