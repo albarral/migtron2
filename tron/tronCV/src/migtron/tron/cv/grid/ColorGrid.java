@@ -68,6 +68,19 @@ public class ColorGrid extends SampleGrid
         return color;
     }    
     
+    // get the grid's global color, the average color of all grid nodes
+//    public Vec3f getGlobalColor()
+//    {
+//        Rect windowNeighbourhood = getWindowCV();                
+//        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(windowNeighbourhood));
+//        MatOfInt samples = new MatOfInt(matSamples.submat(windowNeighbourhood));
+//        
+//        Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
+//        Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
+//        matColor.put(focus.y, focus.x, color.data);        
+//        return color;
+//    }    
+
     // clear the color grid
     @Override
     public void clear()

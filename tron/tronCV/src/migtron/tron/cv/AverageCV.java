@@ -45,10 +45,10 @@ public class AverageCV
         }
 
         long total = 0;
-        for (int i=0; i<points.length; i++)
+        int i = 0;
+        for (Point point : points)
         {
-            Point point = points[i];
-            int weight = weights[i];
+            int weight = weights[i++];
             avg.x += point.x*weight;
             avg.y += point.y*weight;
             total += weight;
@@ -97,10 +97,10 @@ public class AverageCV
         }
 
         long total = 0;
-        for (int i=0; i<points.length; i++)
+        int i = 0;
+        for (Point3 point : points)
         {
-            Point3 point = points[i];
-            int weight = weights[i];
+            int weight = weights[i++];
             avg.x += point.x*weight;
             avg.y += point.y*weight;
             avg.z += point.z*weight;
