@@ -4,6 +4,8 @@
  */
 package migtron.tron.math;
 
+import java.util.Arrays;
+
 
 /**
  * Class to represent a 2D vector with float precision.
@@ -41,6 +43,19 @@ public class Vec2f implements Cloneable
         return cloned;
     }
     
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
+        
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Vec2f vec2f = (Vec2f)o;
+        return Arrays.equals(data, vec2f.data);
+    }
+    
     public float getX() {return data[0];};
     public float getY() {return data[1];};
     public void setX(float value) {data[0] = value;};
@@ -70,7 +85,7 @@ public class Vec2f implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + ")";
+        String desc = "(" + String.valueOf(data[0]) + ", " + String.valueOf(data[1]) + ")";
         return desc;
     }    
 }

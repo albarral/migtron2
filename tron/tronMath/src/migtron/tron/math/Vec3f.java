@@ -4,6 +4,7 @@
  */
 package migtron.tron.math;
 
+import java.util.Arrays;
 
 /**
  * Class to represent a 3D vector with float precision.
@@ -42,7 +43,20 @@ public class Vec3f implements Cloneable
         cloned.data = this.data.clone();
         return cloned;
     }
+
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
         
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Vec3f vec3f = (Vec3f)o;
+        return Arrays.equals(data, vec3f.data);
+    }
+
     public float getX() {return data[0];};
     public float getY() {return data[1];};
     public float getZ() {return data[2];};
@@ -108,7 +122,7 @@ public class Vec3f implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")";
+        String desc = "(" + String.valueOf(data[0]) + ", " + String.valueOf(data[1]) + ", " + String.valueOf(data[2]) + ")";
         return desc;
     }    
 }

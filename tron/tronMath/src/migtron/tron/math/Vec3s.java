@@ -4,6 +4,8 @@
  */
 package migtron.tron.math;
 
+import java.util.Arrays;
+
 
 /**
  * Class to represent a 3D vector with short precision.
@@ -43,6 +45,19 @@ public class Vec3s implements Cloneable
         return cloned;
     }
     
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
+        
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Vec3s vec3s = (Vec3s)o;
+        return Arrays.equals(data, vec3s.data);
+    }
+    
     public short getX() {return data[0];};
     public short getY() {return data[1];};
     public short getZ() {return data[2];};
@@ -76,7 +91,7 @@ public class Vec3s implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")";
+        String desc = "(" + String.valueOf(data[0]) + ", " + String.valueOf(data[1]) + ", " + String.valueOf(data[2]) + ")";
         return desc;
     }    
 }

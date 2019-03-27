@@ -22,6 +22,25 @@ public class Coordinates
         return new Float(magnitude, angle);
     }
 
+    // transform position from cartesian to polar: (x, y) ->  (magnitude, angle)
+    public static Float computePolar(Float cartesianPos)
+    {
+        return computePolar(cartesianPos.x, cartesianPos.y);
+    }
+
+    // transform position from cartesian (integer values) to polar: (x, y) ->  (magnitude, angle)
+    public static Float computePolar(Point cartesianPos)
+    {
+        return computePolar((float)cartesianPos.x, (float)cartesianPos.y);
+    }
+    
+    // transform position from cartesian to polar (both integer values): (x, y) ->  (magnitude, angle)
+    public static Point computePolarPoint(Point cartesianPos)
+    {
+        Float polarPos = computePolar(cartesianPos);
+        return float2Point(polarPos);
+    }
+
     // transform position from polar to cartesian: (magnitude, angle) -> (x, y)
     public static Float computeCartesian(float magnitude, float angle)
     {
@@ -31,37 +50,18 @@ public class Coordinates
         return new Float(x, y);
     }
     
-    // transform position from cartesian to polar: (x, y) ->  (magnitude, angle)
-    public static Float computePolar(Float cartesianPos)
-    {
-        return computePolar(cartesianPos.x, cartesianPos.y);
-    }
-
     // transform position from polar to cartesian: (magnitude, angle) -> (x, y)
     public static Float computeCartesian(Float polarPos)
     {
         return computeCartesian(polarPos.x, polarPos.y);
     }
    
-    // transform position from cartesian (integer values) to polar: (x, y) ->  (magnitude, angle)
-    public static Float computePolar(Point cartesianPos)
-    {
-        return computePolar((float)cartesianPos.x, (float)cartesianPos.y);
-    }
-
     // transform position from polar (integer values) to cartesian: (magnitude, angle) -> (x, y)
     public static Float computeCartesian(Point polarPos)
     {
         return computeCartesian((float)polarPos.x, (float)polarPos.y);
     }
-    
-    // transform position from cartesian to polar (both integer values): (x, y) ->  (magnitude, angle)
-    public static Point computePolarPoint(Point cartesianPos)
-    {
-        Float polarPos = computePolar(cartesianPos);
-        return float2Point(polarPos);
-    }
-    
+        
     // transform position from polar to cartesian (both integer values): (magnitude, angle) -> (x, y)
     public static Point computeCartesianPoint(Point polarPos)
     {
@@ -69,15 +69,9 @@ public class Coordinates
         return float2Point(cartesianPos);
     }
     
-//    // convert integer point to float point
-//    private static Float point2Float(Point point)
-//    {
-//        return new Float((float)point.x, (float)point.y);
-//    }
-
-    // convert float point to integer point
+    // convert float point to integer point (with rounding)
     public static Point float2Point(Float floatPoint)
     {
-        return new Point((int)floatPoint.x, (int)floatPoint.y);
+        return new Point(Math.round(floatPoint.x), Math.round(floatPoint.y));
     }
 }

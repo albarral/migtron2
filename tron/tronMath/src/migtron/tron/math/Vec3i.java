@@ -4,6 +4,8 @@
  */
 package migtron.tron.math;
 
+import java.util.Arrays;
+
 
 /**
  * Class to represent a 3D vector with integer precision.
@@ -42,6 +44,19 @@ public class Vec3i implements Cloneable
         cloned.data = this.data.clone();
         return cloned;
     }
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
+        
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Vec3i vec3i = (Vec3i)o;
+        return Arrays.equals(data, vec3i.data);
+    }    
     
     public int getX() {return data[0];};
     public int getY() {return data[1];};
@@ -92,7 +107,7 @@ public class Vec3i implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")";
+        String desc = "(" + String.valueOf(data[0]) + ", " + String.valueOf(data[1]) + ", " + String.valueOf(data[2]) + ")";
         return desc;
     }    
 }

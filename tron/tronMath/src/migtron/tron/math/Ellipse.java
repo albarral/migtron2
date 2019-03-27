@@ -61,6 +61,23 @@ public class Ellipse implements Cloneable
         return cloned;
     }
         
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
+        
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Ellipse ellipse = (Ellipse)o;
+        return (pos.equals(ellipse.pos) &&
+                covs.equals(ellipse.covs) && 
+                width == ellipse.width && 
+                height == ellipse.height && 
+                angle == ellipse.angle);
+    }
+    
     public void copy(Ellipse ellipse)
     {
         pos = (Float)ellipse.pos.clone();
@@ -72,13 +89,18 @@ public class Ellipse implements Cloneable
     }
     
     public Float getPosition() {return pos;};
-    public Point getPointPosition() {return new Point(Math.round(pos.x), Math.round(pos.y));};
+    public Point getPositionPoint() {return Coordinates.float2Point(pos);};
     public Vec3f getCovariances() {return covs;};
     public float getWidth() {return width;};
     public float getHeight() {return height;};
     public float getAngle() {return angle;};
     
-    public void setPos(Point pos)
+    public void setPosition(Float pos)
+    {
+        this.pos.setLocation(pos);
+    }
+
+    public void setPosition(Point pos)
     {
         this.pos.setLocation(pos);
     }
@@ -162,8 +184,8 @@ public class Ellipse implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "Ellipse [pos = (" + String.valueOf(pos.x) + "," + String.valueOf(pos.y) + ")" +         
-                " (width, height, angle) = (" + String.valueOf(width) + "," + String.valueOf(height) + "," + String.valueOf(angle) + ")" +
+        String desc = "Ellipse [pos = (" + String.valueOf(pos.x) + ", " + String.valueOf(pos.y) + ")" +         
+                " (w, h, ang) = (" + String.valueOf(width) + ", " + String.valueOf(height) + ", " + String.valueOf(angle) + ")" +
                 " covs = " + covs.toString() + "]";
         return desc;
     }    

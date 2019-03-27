@@ -4,6 +4,8 @@
  */
 package migtron.tron.math;
 
+import java.util.Arrays;
+
 
 /**
  * Class to represent a 2D vector with short precision.
@@ -41,6 +43,19 @@ public class Vec2s implements Cloneable
         return cloned;
     }
     
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (this == o) 
+            return true;
+        
+        if (o == null || getClass() != o.getClass()) 
+            return false;
+        
+        Vec2s vec2s = (Vec2s)o;
+        return Arrays.equals(data, vec2s.data);
+    }
+    
     public short getX() {return data[0];};
     public short getY() {return data[1];};
     public void setX(short value) {data[0] = value;};
@@ -70,7 +85,7 @@ public class Vec2s implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + ")";
+        String desc = "(" + String.valueOf(data[0]) + ", " + String.valueOf(data[1]) + ")";
         return desc;
     }    
 }
