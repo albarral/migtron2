@@ -74,7 +74,12 @@ public class MaskTest
         List<Mask> listMasks2 = processMasks(listMasks);
         
         // show masks (original and processed)
-        showMasks(listMasks2, "ellipses");
+        showMasks(listMasks2, "testMaskEllipse");
+        
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+        
         Assert.assertTrue(true);
     }
 
@@ -114,7 +119,12 @@ public class MaskTest
         List<Mask> listMasks2 = processMasks(listMasks);
         
         // show masks (original and processed)
-        showMasks(listMasks2, "lines");
+        showMasks(listMasks2, "testMaskLines");
+
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+        
         Assert.assertTrue(true);
     }
 
@@ -151,8 +161,13 @@ public class MaskTest
         List<Mask> listMasks2 = processMasks(listMasks);
         
         // show masks (original and processed)
-        showMasks(listMasks, "original");
-        showMasks(listMasks2, "processed");
+        showMasks(listMasks, "testMaskOperations - original");
+        showMasks(listMasks2, "testMaskOperations - processed");
+
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+
         Assert.assertTrue(true);
     }    
     

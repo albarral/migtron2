@@ -15,9 +15,6 @@ public class TronTest {
      */
     public static void main(String[] args) 
     {
-        TestCV testCV = new TestCV();
-        testCV.makeTest();
-
         TestData testData = new TestData();
         //testData.makeTest();
 
@@ -25,7 +22,7 @@ public class TronTest {
         //testUtilDisplay.makeTest();                
 
         TestMath testMath = new TestMath();
-        //testMath.makeTest();
+        testMath.makeTest();
 
         TestVision testVision = new TestVision();
         //testVision.makeTest();

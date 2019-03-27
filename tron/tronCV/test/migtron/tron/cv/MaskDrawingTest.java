@@ -43,7 +43,7 @@ public class MaskDrawingTest
     {
         System.out.println("testMaskRectangles");
 
-        Display display = new Display("rectangles");
+        Display display = new Display("testMaskRectangles");
                 
         // create 4 masks (200 x 100)
         MaskDrawing maskDrawing = new MaskDrawing(200, 100);
@@ -61,6 +61,11 @@ public class MaskDrawingTest
         maskDrawing.clear();
         maskDrawing.fillBottomRight();
         showMask(display, maskDrawing);
+        
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+
         Assert.assertTrue(true);
     }
     
