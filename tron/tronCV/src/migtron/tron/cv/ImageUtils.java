@@ -10,8 +10,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
-import migtron.tron.math.Ellipse;
 import migtron.tron.math.Coordinates;
+import migtron.tron.math.Ellipse;
+import migtron.tron.math.Vec3i;
+import migtron.tron.math.color.Colors;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -67,7 +69,7 @@ public class ImageUtils
     }
 
     // draw a line (from origin, with length and angle)
-    public static void drawLine(Mat mat, int x, int y, float length, float angle, eColor color)
+    public static void drawLine(Mat mat, int x, int y, float length, float angle, Colors.eColor color)
     {
         // get vector to second point
         Float vector = Coordinates.computeCartesian(length, angle);
@@ -76,7 +78,7 @@ public class ImageUtils
     }
     
     // draw an ellipse (perimeter only)
-    public static void drawEllipse(Mat mat, int x, int y, int w, int h, float angle, eColor color)
+    public static void drawEllipse(Mat mat, int x, int y, int w, int h, float angle, Colors.eColor color)
     {
         // angle sign changed (as image y axis is opposite to world y axis)
         RotatedRect rotWindow = new RotatedRect(new Point(x, y), new Size(2*w, 2*h), -angle);
@@ -84,7 +86,7 @@ public class ImageUtils
     }
 
     // draw a filled ellipse (whole surface)
-    public static void drawFilledEllipse(Mat mat, int x, int y, int w, int h, float angle, eColor color)
+    public static void drawFilledEllipse(Mat mat, int x, int y, int w, int h, float angle, Colors.eColor color)
     {
         // angle sign changed (as image y axis is opposite to world y axis)
         RotatedRect rotWindow = new RotatedRect(new Point(x, y), new Size(2*w, 2*h), -angle);
@@ -92,25 +94,25 @@ public class ImageUtils
     }
 
     // draw an ellipse (perimeter only)
-    public static void drawEllipse(Mat mat, Ellipse ellipse, eColor color)
+    public static void drawEllipse(Mat mat, Ellipse ellipse, Colors.eColor color)
     {
         Core.ellipse(mat, ellipse2RotatedRect(ellipse), getColor(color));                        
     }
 
     // draw a filled ellipse (whole surface)
-    public static void drawFilledEllipse(Mat mat, Ellipse ellipse, eColor color)
+    public static void drawFilledEllipse(Mat mat, Ellipse ellipse, Colors.eColor color)
     {
         Core.ellipse(mat, ellipse2RotatedRect(ellipse), getColor(color), Core.FILLED);                        
     }
     
     // draw a rectangle (perimeter only)
-    public static void drawRectangle(Mat mat, Rect window, eColor color)
+    public static void drawRectangle(Mat mat, Rect window, Colors.eColor color)
     {
         Core.rectangle(mat, window.tl(), window.br(), getColor(color));        
     }
 
     // draw a filled rectangle (whole surface)
-    public static void drawFilledRectangle(Mat mat, Rect window, eColor color)
+    public static void drawFilledRectangle(Mat mat, Rect window, Colors.eColor color)
     {
         Core.rectangle(mat, window.tl(), window.br(), getColor(color), Core.FILLED);        
     }
@@ -123,26 +125,13 @@ public class ImageUtils
     }
 
     // convert color enum to opencv color
-    private static Scalar getColor(eColor ecolor)
+    private static Scalar getColor(Colors.eColor ecolor)
     {
-        Scalar color; 
-        switch (ecolor)
-        {
-            case eCOLOR_BLACK:
-                color = new Scalar(0); 
-                break;
-
-            case eCOLOR_WHITE:
-                color = new Scalar(255); 
-                break;
-                
-            case eCOLOR_GREY:
-                color = new Scalar(128); 
-                break;
-                
-            default: 
-                color = new Scalar(0); // default is black
-        }
-        return color;        
+        Vec3i color = Colors.getRGB(ecolor);
+        
+        if (color != null)
+            return new Scalar(color.getX(), color.getY(), color.getZ());
+        else
+            return new Scalar(0); // default is black
     }
 }

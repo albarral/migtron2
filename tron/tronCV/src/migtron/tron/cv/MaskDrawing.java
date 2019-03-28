@@ -4,6 +4,8 @@
  */
 package migtron.tron.cv;
 
+import migtron.tron.math.color.Colors;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -114,7 +116,7 @@ public class MaskDrawing
         }
         if (window != null)
         {
-            ImageUtils.drawFilledRectangle(mat, window, ImageUtils.eColor.eCOLOR_WHITE);
+            ImageUtils.drawFilledRectangle(mat, window, Colors.eColor.eCOLOR_WHITE);
             return true;
         }
         else
