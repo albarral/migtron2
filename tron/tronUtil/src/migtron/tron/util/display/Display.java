@@ -33,35 +33,41 @@ public class Display
     }
     
     // add new window to display with image from path
-    public void addWindow(String imagePath)
+    // returns the window position
+    public int addWindow(String imagePath)
     {      
         // create icon
         ImageIcon icon = createIcon(imagePath);
         addWindow(icon);
+        return listWindows.size()-1;
     }    
     
     // add new window to display with buffered image
-    public void addWindow(BufferedImage image)
+    // returns the window position
+    public int addWindow(BufferedImage image)
     {      
         // create icon
         ImageIcon icon = createIcon(image);
         addWindow(icon);
+        return listWindows.size()-1;
     }    
 
-    // update existing display window with image from path
-    public void updateWindow(int position, String imagePath)
+    // update existing display window with image from path        
+    // returns true if window exists, false otherwise
+    public boolean updateWindow(int position, String imagePath)
     {                
         // create icon        
         ImageIcon icon = createIcon(imagePath);
-        updateWindow(position, icon);
+        return updateWindow(position, icon);
     }
     
     // update existing display window with buffered image
-    public void updateWindow(int position, BufferedImage image)
+    // returns true if window exists, false otherwise
+    public boolean updateWindow(int position, BufferedImage image)
     {                
         // create icon        
         ImageIcon icon = createIcon(image);
-        updateWindow(position, icon);
+        return updateWindow(position, icon);
     }
     
     // adds a new window to the display showing an image icon
@@ -80,16 +86,20 @@ public class Display
     }    
     
     // update existing display window with an image icon
-    private void updateWindow(int position, ImageIcon icon)
+    // returns true if window exists, false otherwise
+    private boolean updateWindow(int position, ImageIcon icon)
     {                
+        // safety check
         if (position < listWindows.size())
         {            
             // update label
             if (icon != null)
                 listWindows.get(position).setIcon(icon);
+            return true;
         }
+        // if window not exists
         else
-            System.out.println("Display: updateWindow() failed, window not exists " + position);                                                   
+            return false;
     }
     
     private ImageIcon createIcon(String imagePath)
