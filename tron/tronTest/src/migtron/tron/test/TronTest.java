@@ -18,11 +18,11 @@ public class TronTest {
         TestData testData = new TestData();
         //testData.makeTest();
 
-        TestUtilDisplay testUtilDisplay = new TestUtilDisplay();
-        //testUtilDisplay.makeTest();                
+        TestMasks testMasks = new TestMasks();
+        testMasks.makeTest();
 
         TestMath testMath = new TestMath();
-        testMath.makeTest();
+        //testMath.makeTest();
 
         TestVision testVision = new TestVision();
         //testVision.makeTest();

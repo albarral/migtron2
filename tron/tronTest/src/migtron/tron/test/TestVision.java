@@ -6,7 +6,6 @@ package migtron.tron.test;
 
 import migtron.tron.cv.ImageUtils;
 import migtron.tron.cv.Mask;
-import migtron.tron.cv.MaskDrawing;
 import migtron.tron.cv.OpenCV;
 import migtron.tron.util.display.Display;
 import migtron.tron.vision.Body;
@@ -39,18 +38,18 @@ public class TestVision
     {
         System.out.println(modName  + ".testBody() ...");
 
-        int imgW = 200;
-        int imgH = 100;
-        MaskDrawing maskDrawing = new MaskDrawing(imgW, imgH);
-        maskDrawing.fillTop();
-        Mask mask = new Mask(maskDrawing.getMat());
-
-        Body body = new Body(mask);
-                        
-        // show two images at the same time
-        Display display = new Display("display");
-        display.addWindow(ImageUtils.cvMask2Java(body.getMask().getMat()));
-        System.out.println(body.toString());
+//        int imgW = 200;
+//        int imgH = 100;
+//        MaskDrawing maskDrawing = new MaskDrawing(imgW, imgH);
+//        maskDrawing.fillTop();
+//        Mask mask = new Mask(maskDrawing.getMat());
+//
+//        Body body = new Body(mask);
+//                        
+//        // show two images at the same time
+//        Display display = new Display("display");
+//        display.addWindow(ImageUtils.cvMask2Java(body.getMask().getMat()));
+//        System.out.println(body.toString());
     }
     
 //    private void testBodies() 

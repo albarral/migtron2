@@ -4,8 +4,6 @@
  */
 package migtron.tron.test;
 
-import java.awt.geom.Point2D.Float;
-import java.awt.Point;
 import java.util.Arrays;
 
 import migtron.tron.math.Sampling;
