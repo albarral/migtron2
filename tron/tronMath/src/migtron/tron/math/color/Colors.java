@@ -52,7 +52,8 @@ public class Colors
                 break;
 
             default: 
-                color = null;
+                // default is black
+                color = new Vec3i(0, 0, 0);
         }
         return color;        
     }

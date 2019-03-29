@@ -4,26 +4,20 @@
  */
 package migtron.tron.cv;
 
-import java.awt.geom.Point2D.Float;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
-import migtron.tron.math.Coordinates;
 import migtron.tron.math.Ellipse;
-import migtron.tron.math.Vec3i;
-import migtron.tron.math.color.Colors;
 
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
-import org.opencv.core.Scalar;
 import org.opencv.highgui.Highgui;
 
 
@@ -33,12 +27,6 @@ import org.opencv.highgui.Highgui;
  */
 public class ImageUtils
 {
-    public enum eColor{
-        eCOLOR_BLACK, 
-        eCOLOR_WHITE,
-        eCOLOR_GREY      
-    }
-    
     // convert opencv mask to java image
     public static BufferedImage cvMask2Java(Mat mat)
     {                
@@ -68,70 +56,22 @@ public class ImageUtils
         }
     }
 
-    // draw a line (from origin, with length and angle)
-    public static void drawLine(Mat mat, int x, int y, float length, float angle, Colors.eColor color)
+    // convert opencv point to java point (integer version)
+    public static java.awt.Point pointCv2Java(Point point)
     {
-        // get vector to second point
-        Float vector = Coordinates.computeCartesian(length, angle);
-        // vector.y sign changed (as image y axis is opposite to world y axis)
-        Core.line(mat, new Point(x, y), new Point(x+vector.x, y-vector.y), getColor(color));                        
+        return new java.awt.Point((int)point.x, (int)point.y);
+    }
+
+    // convert opencv point to java point (float version)
+    public static Point2D.Float pointCv2JavaFloat(Point point)
+    {
+        return new Point2D.Float((float)point.x, (float)point.y);
     }
     
-    // draw an ellipse (perimeter only)
-    public static void drawEllipse(Mat mat, int x, int y, int w, int h, float angle, Colors.eColor color)
-    {
-        // angle sign changed (as image y axis is opposite to world y axis)
-        RotatedRect rotWindow = new RotatedRect(new Point(x, y), new Size(2*w, 2*h), -angle);
-        Core.ellipse(mat, rotWindow, getColor(color));                        
-    }
-
-    // draw a filled ellipse (whole surface)
-    public static void drawFilledEllipse(Mat mat, int x, int y, int w, int h, float angle, Colors.eColor color)
-    {
-        // angle sign changed (as image y axis is opposite to world y axis)
-        RotatedRect rotWindow = new RotatedRect(new Point(x, y), new Size(2*w, 2*h), -angle);
-        Core.ellipse(mat, rotWindow, getColor(color), Core.FILLED);                        
-    }
-
-    // draw an ellipse (perimeter only)
-    public static void drawEllipse(Mat mat, Ellipse ellipse, Colors.eColor color)
-    {
-        Core.ellipse(mat, ellipse2RotatedRect(ellipse), getColor(color));                        
-    }
-
-    // draw a filled ellipse (whole surface)
-    public static void drawFilledEllipse(Mat mat, Ellipse ellipse, Colors.eColor color)
-    {
-        Core.ellipse(mat, ellipse2RotatedRect(ellipse), getColor(color), Core.FILLED);                        
-    }
-    
-    // draw a rectangle (perimeter only)
-    public static void drawRectangle(Mat mat, Rect window, Colors.eColor color)
-    {
-        Core.rectangle(mat, window.tl(), window.br(), getColor(color));        
-    }
-
-    // draw a filled rectangle (whole surface)
-    public static void drawFilledRectangle(Mat mat, Rect window, Colors.eColor color)
-    {
-        Core.rectangle(mat, window.tl(), window.br(), getColor(color), Core.FILLED);        
-    }
-
-    // convert tron ellipse to opencv rotated window
+    // convert ellipse (tron.math form) to opencv rotated window
     public static RotatedRect ellipse2RotatedRect(Ellipse ellipse)
     {
         // angle sign changed (as image y axis is opposite to world y axis)
         return new RotatedRect(new Point(ellipse.getPosition().x, ellipse.getPosition().y), new Size(2*ellipse.getWidth(), 2*ellipse.getHeight()), -ellipse.getAngle());
-    }
-
-    // convert color enum to opencv color
-    private static Scalar getColor(Colors.eColor ecolor)
-    {
-        Vec3i color = Colors.getRGB(ecolor);
-        
-        if (color != null)
-            return new Scalar(color.getX(), color.getY(), color.getZ());
-        else
-            return new Scalar(0); // default is black
     }
 }
