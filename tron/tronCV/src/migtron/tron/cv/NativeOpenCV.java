@@ -10,13 +10,13 @@ import org.opencv.core.Core;
  * Utility class to load openCV native library for use with java
  * @author albarral
  */
-public class OpenCV 
+public class NativeOpenCV 
 {
     static boolean loaded = false;      // flag indicating when native library is loaded
     
-    // activate OpenCV by loading its native library
+    // load NativeOpenCV by loading its native library
     // does nothing if already activated
-    public static void activate()
+    public static void load()
     {
         if (!loaded)
         {
