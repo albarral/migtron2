@@ -7,14 +7,13 @@ package migtron.tron.draw;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import migtron.tron.cv.OpenCV;
 import migtron.tron.math.Ellipse;
 import migtron.tron.math.Vec3f;
 import migtron.tron.util.display.Display;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-//import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +25,7 @@ import org.junit.Test;
  */
 public class MathDrawerTest 
 {
-    private Display display;
+    private static Display display;
     private MathDrawer mathDrawer;
     
     public MathDrawerTest() {
@@ -34,23 +33,27 @@ public class MathDrawerTest
     
     @BeforeClass
     public static void setUpClass() {
-        OpenCV.activate();        
+        NativeOpenCV.load();
+        display = new Display("MathDrawerTest");
     }
         
+   @AfterClass
+    public static void tearDownClass() {
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+    }
+    
     @Before
     public void setUp() {
-        display = new Display("MathDrawerTest");
         mathDrawer = new MathDrawer(200, 100);        
     }
     
     @After
     public void tearDown() {
         // wait for a while to see the result
-        try {Thread.sleep(2000);}
+        try {Thread.sleep(500);}
         catch (InterruptedException e) {}
-        
-        display = null;
-        mathDrawer = null;
     }
 
     /**

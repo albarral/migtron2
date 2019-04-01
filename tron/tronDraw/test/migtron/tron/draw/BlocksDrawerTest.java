@@ -4,12 +4,11 @@
  */
 package migtron.tron.draw;
 
-import migtron.tron.cv.OpenCV;
 import migtron.tron.util.display.Display;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-//import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,31 +20,36 @@ import org.junit.Test;
  */
 public class BlocksDrawerTest 
 {
-    private Display display;
+    private static Display display;
     private BlocksDrawer blocksDrawer;
     
-    public BlocksDrawerTest() {
+    public BlocksDrawerTest() 
+    {
     }
     
     @BeforeClass
     public static void setUpClass() {
-        OpenCV.activate();        
+        NativeOpenCV.load();
+        display = new Display("BlocksDrawerTest");
     }
-        
+
+   @AfterClass
+    public static void tearDownClass() {
+        // wait for a while to see the result
+        try {Thread.sleep(2000);}
+        catch (InterruptedException e) {}
+    }
+    
     @Before
     public void setUp() {
-        display = new Display("BlocksDrawerTest");
         blocksDrawer = new BlocksDrawer(200, 100, 3);        
     }
     
     @After
     public void tearDown() {
         // wait for a while to see the result
-        try {Thread.sleep(2000);}
+        try {Thread.sleep(500);}
         catch (InterruptedException e) {}
-        
-        display = null;
-        blocksDrawer = null;
     }
 
     /**

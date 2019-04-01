@@ -7,7 +7,6 @@ package migtron.tron.draw;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import migtron.tron.cv.ImageUtils;
 import migtron.tron.math.Coordinates;
 import migtron.tron.math.Ellipse;
                
@@ -42,30 +41,45 @@ public class MathDrawer extends Drawer
     // draw an ellipse (curve only)
     public void drawEllipse(Ellipse ellipse)
     {
-        Core.ellipse(mat, ImageUtils.ellipse2RotatedRect(ellipse), color);                        
+        Core.ellipse(mat, DrawUtils.ellipse2RotatedRect(ellipse), color);                        
     }
 
     // draw a filled ellipse (whole surface)
     public void drawFilledEllipse(Ellipse ellipse)
     {
-        Core.ellipse(mat, ImageUtils.ellipse2RotatedRect(ellipse), color, Core.FILLED);                        
+        Core.ellipse(mat, DrawUtils.ellipse2RotatedRect(ellipse), color, Core.FILLED);                        
     }
 
     // draw a rectangle (perimeter only)
     public void drawRectangle(Rect window)
     {
-        Core.rectangle(mat, window.tl(), window.br(), color);        
+        // window br is exclussive, so don't want to paint it
+        Rect window2 = shortenWindow(window);
+        Core.rectangle(mat, window2.tl(), window2.br(), color);        
     }
 
     // draw a filled rectangle (whole surface)
     public void drawFilledRectangle(Rect window)
     {
-        Core.rectangle(mat, window.tl(), window.br(), color, Core.FILLED);        
+        // window br is exclussive, so don't want to paint it
+        Rect window2 = shortenWindow(window);
+        Core.rectangle(mat, window2.tl(), window2.br(), color, Core.FILLED);        
     }
 
     // draw a filled rectangle (whole surface) in a given matrix with a given color
     static public void drawFilledRectangle(Mat mat, Rect window, Scalar color)
     {
-        Core.rectangle(mat, window.tl(), window.br(), color, Core.FILLED);        
+        // window br is exclussive, so don't want to paint it
+        Rect window2 = shortenWindow(window);
+        Core.rectangle(mat, window2.tl(), window2.br(), color, Core.FILLED);        
+    }
+
+    // shorten window by 1 unit in both dimensions
+    private static Rect shortenWindow(Rect window)
+    {
+        Rect window2 = window.clone();
+        window2.width--;
+        window2.height--;
+        return window2;
     }
 }

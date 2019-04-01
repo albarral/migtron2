@@ -6,7 +6,6 @@ package migtron.tron.draw;
 
 import java.awt.image.BufferedImage;
 
-import migtron.tron.cv.ImageUtils;
 import migtron.tron.math.Vec3i;
 import migtron.tron.math.color.Colors;
 
@@ -39,7 +38,7 @@ public class Drawer
     // get drawn image in java format
     public BufferedImage getImage()
     {
-        return ImageUtils.cvMask2Java(mat);
+        return DrawUtils.cvMask2Java(mat);
     }
 
     // set the base image for drawing

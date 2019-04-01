@@ -38,6 +38,8 @@ public class BlocksDrawer extends Drawer
         this(w, h, 2);
     }
       
+    public int getGranularity() {return n;}
+    
     // fill block at specified position
     public boolean fillBlock(int row, int col)
     {
