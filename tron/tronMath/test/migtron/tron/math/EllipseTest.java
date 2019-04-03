@@ -29,10 +29,8 @@ public class EllipseTest
     public void setUp() 
     {
         Float pos = new Float(50, 50);
-        Vec3f covs = new Vec3f(100, 100, 0);        
-        
+        Vec3f covs = new Vec3f(100, 100, 0);                
         ellipse = new Ellipse(pos, covs);
-        System.out.println("\nellipse1: " + ellipse.toString());
     }
     
     @After
@@ -49,6 +47,7 @@ public class EllipseTest
         System.out.println("clone");
         
         Ellipse ellipse2 = (Ellipse)ellipse.clone();
+        System.out.println("ellipse1: " + ellipse.toString());
         System.out.println("ellipse2: " + ellipse2.toString());
 
         Assert.assertEquals(ellipse, ellipse2);
@@ -63,79 +62,83 @@ public class EllipseTest
     {
         System.out.println("setCovariances");
         
+        System.out.println("ellipse1: " + ellipse.toString());
         Vec3f covs = new Vec3f(900, 100, 0);        
         ellipse.setCovariances(covs);
-        System.out.println("ellipse1 changed: " + ellipse.toString());
+        System.out.println("ellipse3: " + ellipse.toString());
         
         Assert.assertTrue(true);
     }
 
     /**
-     * Test of mergeEllipse method, of class Ellipse.
+     * Test of merge method, of class Ellipse.
      */
     @Test
     public void testMergeHorizontal() throws Exception 
     {
         System.out.println("mergeHorizontal");
                 
-        Ellipse ellipse2 = getShiftedEllipse(50f, 0f);
+        Ellipse ellipse2 = (Ellipse)ellipse.clone(); 
+        shiftEllipse(ellipse2, 50f, 0f);
+        System.out.println("ellipse1: " + ellipse.toString());
         System.out.println("ellipse2: " + ellipse2.toString());
         
         float w1 = 0.5f;
         float w2 = 0.5f;
-        ellipse.mergeEllipse(ellipse2, w1, w2);
-        System.out.println("merged: " + ellipse.toString());
+        ellipse.merge(ellipse2, w1, w2);
+        System.out.println("ellipse3: " + ellipse.toString());
 
         Assert.assertTrue(true);
     }
 
         /**
-     * Test of mergeEllipse method, of class Ellipse.
+     * Test of merge method, of class Ellipse.
      */
     @Test
     public void testMergeVertical() throws Exception 
     {
         System.out.println("mergeVertical");
                 
-        Ellipse ellipse2 = getShiftedEllipse(0f, 50f);
+        Ellipse ellipse2 = (Ellipse)ellipse.clone(); 
+        shiftEllipse(ellipse2, 0f, 50f);
+        System.out.println("ellipse1: " + ellipse.toString());
         System.out.println("ellipse2: " + ellipse2.toString());
         
         float w1 = 0.5f;
         float w2 = 0.5f;
-        ellipse.mergeEllipse(ellipse2, w1, w2);
-        System.out.println("merged: " + ellipse.toString());
+        ellipse.merge(ellipse2, w1, w2);
+        System.out.println("ellipse3: " + ellipse.toString());
 
         Assert.assertTrue(true);
     }
 
         /**
-     * Test of mergeEllipse method, of class Ellipse.
+     * Test of merge method, of class Ellipse.
      */
     @Test
     public void testMergeDiagonal() throws Exception 
     {
         System.out.println("mergeDiagonal");
                 
-        Ellipse ellipse2 = getShiftedEllipse(50f, 50f);
+        Ellipse ellipse2 = (Ellipse)ellipse.clone(); 
+        shiftEllipse(ellipse2, 50f, 50f);
+        System.out.println("ellipse1: " + ellipse.toString());
         System.out.println("ellipse2: " + ellipse2.toString());
         
         float w1 = 0.5f;
         float w2 = 0.5f;
-        ellipse.mergeEllipse(ellipse2, w1, w2);
-        System.out.println("merged: " + ellipse.toString());
+        ellipse.merge(ellipse2, w1, w2);
+        System.out.println("ellipse3: " + ellipse.toString());
 
         Assert.assertTrue(true);
     }
     
-    private Ellipse getShiftedEllipse(float dx, float dy) throws Exception 
+    private void shiftEllipse(Ellipse ellipse, float dx, float dy) 
     {                
-        Ellipse ellipse2 = (Ellipse)ellipse.clone(); 
-        Float pos2 = (Float)ellipse.getPosition().clone();
-        pos2.x += dx;
-        pos2.y += dy;
-        ellipse2.setPosition(pos2);
-        
-        return ellipse2;
+        Float pos = ellipse.getPosition();
+        pos.x += dx;
+        pos.y += dy;
+        ellipse.setPosition(pos);
     }
     
 }

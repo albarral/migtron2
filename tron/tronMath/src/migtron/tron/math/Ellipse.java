@@ -51,14 +51,19 @@ public class Ellipse implements Cloneable
     }    
     
     @Override
-    public Object clone() throws CloneNotSupportedException 
+    public Object clone()
     {
+        try {
         // all members automatically copied
         // then class members cloned for deep copy
         Ellipse cloned = (Ellipse)super.clone();
         cloned.pos = (Float)pos.clone();
         cloned.covs = (Vec3f)covs.clone();
         return cloned;
+        }
+        catch (CloneNotSupportedException e) {
+         throw new AssertionError();
+      }        
     }
         
     @Override
@@ -144,8 +149,14 @@ public class Ellipse implements Cloneable
             return 1000f;
     }
 
+    // merge given ellipse into this ellipse (assuming both have the same weight)
+    public void merge(Ellipse ellipse)
+    {
+        merge(ellipse, 0.5f, 0.5f);
+    }
+
     // merge given ellipse into this ellipse combining their covariances and centroids in a ponderated way (using weights) 
-    public void mergeEllipse(Ellipse ellipse, float w1, float w2)
+    public void merge(Ellipse ellipse, float w1, float w2)
     {
         Float pos2 = ellipse.getPosition();
         Vec3f covs2 = ellipse.getCovariances();

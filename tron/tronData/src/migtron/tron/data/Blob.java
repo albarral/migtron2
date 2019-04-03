@@ -73,7 +73,7 @@ public class Blob extends Ellipse implements Cloneable
             // merge ellipses
             float w1 = (float)mass / newMass;
             float w2 = (float)blob2.mass / newMass;
-            super.mergeEllipse(blob2, w1, w2);
+            super.merge(blob2, w1, w2);
             // update mass and shape factor
             mass = newMass;      
             updateShapeFactor();
