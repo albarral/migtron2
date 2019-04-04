@@ -4,7 +4,6 @@
  */
 package migtron.tron.cv;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Rect;
+
 
 /**
  *
@@ -96,7 +95,10 @@ public class MaskTest
 
         showMasks("cloning");
 
-        Assert.assertTrue(true);
+        processMasks();
+        processResultMasks();
+        
+        Assert.assertEquals(listEllipses.get(0), listEllipses2.get(0));
     }
 
 
@@ -141,16 +143,14 @@ public class MaskTest
     public void testMerge() {
         System.out.println("merge");
 
-        // top filled mask
-        blocksDrawer.fillTop();
-        //blocksDrawer.fillBlock(0, 0);        
+        // top left corner mask
+        blocksDrawer.fillBlock(0, 0);        
         Mask mask1 = new Mask(blocksDrawer.getMat());
         listMasks.add(mask1);
 
-        // right filled mask
+        // center block mask
         blocksDrawer.clear();
-        blocksDrawer.fillRight();
-        //blocksDrawer.fillBlock(1, 1);        
+        blocksDrawer.fillBlock(1, 1);        
         Mask mask2 = new Mask(blocksDrawer.getMat());
         listMasks.add(mask2);
         
@@ -161,7 +161,11 @@ public class MaskTest
 
         showMasks("merge");
 
-        Assert.assertTrue(true);
+        int mass1 = mask1.computeMass();
+        int mass2 = mask2.computeMass();
+        int mass3 = mask3.computeMass();
+        
+        Assert.assertTrue((mass1 + mass2) == mass3);
     }
 
     /**
@@ -173,14 +177,12 @@ public class MaskTest
 
         // top filled mask
         blocksDrawer.fillTop();
-        //blocksDrawer.fillBlock(0, 0);        
         Mask mask1 = new Mask(blocksDrawer.getMat());
         listMasks.add(mask1);
 
         // right filled mask
         blocksDrawer.clear();
         blocksDrawer.fillRight();
-        //blocksDrawer.fillBlock(1, 1);        
         Mask mask2 = new Mask(blocksDrawer.getMat());
         listMasks.add(mask2);
         
@@ -191,103 +193,31 @@ public class MaskTest
 
         showMasks("intersection");
 
-        Assert.assertTrue(true);
-    }
+        int mass1 = mask1.computeMass();
+        int mass2 = mask2.computeMass();
+        int mass3 = mask3.computeMass();
         
-    /**
-     * Test vertical merge of masks
-     */
-    @Test
-    public void testVerticalMerge() {
-        System.out.println("testVerticalMerge");
+        Assert.assertTrue(mass3 == mass1/3 && mass3 == mass2/3);
+    }  
 
-        // merge consecutive two blocks in vertical layout
-        merge2Blocks(new Point(1,0), new Point(1,1));
-        processMasks();
-
-        // get merge of original ellipses
-        Ellipse ellipse3 = merge2Ellipses(listEllipses.get(0), listEllipses.get(1));
-        // result ellipse
-        Ellipse result = listEllipses2.get(0);
-        
-        Assert.assertEquals(ellipse3, result);
-    }
-
-    
-     // merge 2 blocks given by specified (x,y) positions
-    private void merge2Blocks(Point pos1, Point pos2) 
-    {
-        // first block
-        blocksDrawer.fillBlock(pos1.y, pos1.x);        
-        Mask mask1 = new Mask(blocksDrawer.getMat());
-        listMasks.add(mask1);
-
-        // second block
-        blocksDrawer.clear();
-        blocksDrawer.fillBlock(pos2.y, pos2.x);        
-        Mask mask2 = new Mask(blocksDrawer.getMat());
-        listMasks.add(mask2);
-        
-        // merge of both blocks
-        Mask mask3 = (Mask)mask1.clone();                
-        mask3.merge(mask2);        
-        listMasks2.add(mask3);
-    }
-    
-     // merge 2 ellipses and return the resulting one
-    private Ellipse merge2Ellipses(Ellipse ellipse1, Ellipse ellipse2)
-    {
-        Ellipse ellipse3 = (Ellipse)ellipse1.clone();
-        ellipse3.merge(ellipse2);
-        return ellipse3;
-    }
-    
-    // process original and result masks (computing their ellipses)
+    // process original masks (computing their ellipses)
     private void processMasks()
     {
         for (Mask mask : listMasks)
         {
             listEllipses.add(mask.computeEllipse());
         }
+    }    
+
+    // process result masks (computing their ellipses)
+    private void processResultMasks()
+    {
         for (Mask mask : listMasks2)
         {
             listEllipses2.add(mask.computeEllipse());
         }
     }    
-
-        
-    // draw obtained ellipses on their respective masks
-    private void drawEllipses()
-    {
-        int i=0;
-        for (Mask mask : listMasks)
-        {
-            Ellipse ellipse = listEllipses.get(i);
-            if (ellipse != null)
-                drawEllipseInMask(mask, ellipse);
-            i++;
-        }
-        int j=0;
-        for (Mask mask : listMasks2)
-        {
-            Ellipse ellipse = listEllipses2.get(j);
-            if (ellipse != null)
-                drawEllipseInMask(mask, ellipse);
-            j++;
-        }
-    }
-
-    // draw given ellipse in given mask
-    private void drawEllipseInMask(Mask mask, Ellipse ellipse)
-    {
-        // set mask as base & draw ellipse
-        mathDrawer.setBase(mask.getMat());
-        mathDrawer.drawEllipse(ellipse);
-        // put result back to mask
-        Rect window = new Rect(0, 0, w, h);
-        mask.set(mathDrawer.getMat(), window);
-    }    
-    
+            
     // show original and result masks in a display
     private void showMasks(String title)
     {
