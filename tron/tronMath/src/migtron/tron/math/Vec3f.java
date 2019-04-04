@@ -37,11 +37,16 @@ public class Vec3f implements Cloneable
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException 
+    public Object clone() // throws CloneNotSupportedException 
     {
-        Vec3f cloned = (Vec3f)super.clone();
-        cloned.data = this.data.clone();
-        return cloned;
+        try {
+            Vec3f cloned = (Vec3f)super.clone();
+            cloned.data = this.data.clone();
+            return cloned;
+        }
+        catch (CloneNotSupportedException e) {
+         throw new AssertionError();
+      }                
     }
 
     @Override

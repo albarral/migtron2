@@ -47,7 +47,7 @@ public class Blob extends Ellipse implements Cloneable
     }    
     
     @Override
-    public Object clone() throws CloneNotSupportedException 
+    public Object clone() // throws CloneNotSupportedException 
     {
         // all members automatically copied
         return (Blob)super.clone();

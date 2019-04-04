@@ -54,12 +54,12 @@ public class Ellipse implements Cloneable
     public Object clone()
     {
         try {
-        // all members automatically copied
-        // then class members cloned for deep copy
-        Ellipse cloned = (Ellipse)super.clone();
-        cloned.pos = (Float)pos.clone();
-        cloned.covs = (Vec3f)covs.clone();
-        return cloned;
+            // all members automatically copied
+            // then class members cloned for deep copy
+            Ellipse cloned = (Ellipse)super.clone();
+            cloned.pos = (Float)pos.clone();
+            cloned.covs = (Vec3f)covs.clone();
+            return cloned;
         }
         catch (CloneNotSupportedException e) {
          throw new AssertionError();
