@@ -4,9 +4,8 @@
  */
 package migtron.tron.test;
 
-import migtron.tron.cv.ImageUtils;
+import migtron.tron.cv.Conversions;
 import migtron.tron.cv.Mask;
-import migtron.tron.cv.OpenCV;
 import migtron.tron.util.display.Display;
 import migtron.tron.vision.Body;
 
@@ -27,8 +26,6 @@ public class TestVision
 
     public void makeTest()
     {
-        OpenCV.activate();
-        
         System.out.println(modName  + ": test start");
         testBody();
         System.out.println(modName  + ": test end");
@@ -48,7 +45,7 @@ public class TestVision
 //                        
 //        // show two images at the same time
 //        Display display = new Display("display");
-//        display.addWindow(ImageUtils.cvMask2Java(body.getMask().getMat()));
+//        display.addWindow(Conversions.cvMask2Java(body.getMask().getMat()));
 //        System.out.println(body.toString());
     }
     

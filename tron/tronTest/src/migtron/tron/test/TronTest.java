@@ -4,6 +4,8 @@
  */
 package migtron.tron.test;
 
+import migtron.tron.cv.NativeOpenCV;
+
 /**
  *
  * @author albarral
@@ -15,12 +17,14 @@ public class TronTest {
      */
     public static void main(String[] args) 
     {
+        NativeOpenCV.load();
+
         TestData testData = new TestData();
         //testData.makeTest();
 
-        TestMasks testMasks = new TestMasks();
-        testMasks.makeTest();
-
+        TestMasks2 testMasks2 = new TestMasks2();
+        testMasks2.makeTest();
+        
         TestMath testMath = new TestMath();
         //testMath.makeTest();
 
