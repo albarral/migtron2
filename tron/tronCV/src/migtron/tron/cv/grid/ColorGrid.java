@@ -4,6 +4,7 @@
  */
 package migtron.tron.cv.grid;
 
+import java.awt.Point;
 import migtron.tron.cv.AverageCV;
 import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
@@ -26,41 +27,62 @@ import org.opencv.core.Scalar;
 public class ColorGrid extends SampleGrid
 {
     protected Mat matColor;   // RGB color matrix (float precision)
+    private Vec3f focusColor;     // RGB color in the focused node
 
     public ColorGrid(int repW, int repH, float reductionFactor)
     {
         super(repW, repH, reductionFactor);
         // create grid sized matrix to store the node colors
         matColor = Mat.zeros(h, w, CvType.CV_32FC3);    
+        focusColor = new Vec3f();
     }    
         
-    public Mat getColorMatrix() {return matColor;}
-    
+    public Mat getColorMatrix() {return matColor;}    
     // get the color of the focused node
-    public Vec3f getNodeColor()
-    {
-        Vec3f color = new Vec3f();
-        matColor.get(focus.y, focus.x, color.data);        
-        return color;
-    }    
+    public Vec3f getFocusColor() {return focusColor;}
     
-    // set color of the focused node (node color is the average of all its samples)
-    public void updateNodeColor(Vec3f color)
+    // set grid focus to a represented matrix position 
+    // it internally gets the color of the focused node
+    // returns true if focus inside limits, false otherwise
+    @Override
+    public boolean focus(int x, int y)
+    {   
+        boolean bok = super.focus(x, y);
+        
+        if (bok)
+            matColor.get(focus.y, focus.x, focusColor.data);        
+
+        return bok;
+    }
+
+    // set grid focus to a represented matrix position 
+    // it internally gets the color of the focused node
+    // returns true if focus inside limits, false otherwise
+    @Override
+    public boolean focus(Point point)
+    {
+        return focus(point.x, point.y);
+    }
+    
+    // add a new color sample to the focused node
+    // the average node color is updated with the given sample
+    public void addColorSample(Vec3f color)
     {
         // set the node's average color with the new sample
-        Average3f avgColor = new Average3f(getNodeColor(), getNodeSamples());
+        Average3f avgColor = new Average3f(focusColor, focusSamples);
         avgColor.updateWithSample(color);
-        matColor.put(focus.y, focus.x, avgColor.data);        
-        // and set the number of samples in the node
-        addNodeSample();
+        focusColor = (Vec3f)avgColor;
+        matColor.put(focus.y, focus.x, focusColor.data);        
+        // and update the node samples number
+        addSample();
     }
 
     // get the grid's local color, the average color of the node's neighbourhood
     public Vec3f getLocalColor()
     {
-        Rect windowNeighbourhood = getWindowCV();                
-        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(windowNeighbourhood));
-        MatOfInt samples = new MatOfInt(matSamples.submat(windowNeighbourhood));
+        Rect neighbourhood = getWindowCV();                
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(neighbourhood));
+        MatOfInt samples = new MatOfInt(matSamples.submat(neighbourhood));
         
         Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
         Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
@@ -69,17 +91,15 @@ public class ColorGrid extends SampleGrid
     }    
     
     // get the grid's global color, the average color of all grid nodes
-//    public Vec3f getGlobalColor()
-//    {
-//        Rect windowNeighbourhood = getWindowCV();                
-//        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(windowNeighbourhood));
-//        MatOfInt samples = new MatOfInt(matSamples.submat(windowNeighbourhood));
-//        
-//        Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
-//        Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
-//        matColor.put(focus.y, focus.x, color.data);        
-//        return color;
-//    }    
+    public Vec3f getGlobalColor()
+    {
+        Rect sampled = getSampledWindowCV();                
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(sampled));
+        MatOfInt samples = new MatOfInt(matSamples.submat(sampled));
+        
+        Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
+        return new Vec3f((float)average.x, (float)average.y, (float)average.z);
+    }    
 
     // clear the color grid
     @Override
@@ -87,9 +107,8 @@ public class ColorGrid extends SampleGrid
     {
         super.clear();
         if (!matColor.empty())            
-        {
            matColor.setTo(new Scalar(0.0));
-        }
+        focusColor = new Vec3f();
     }
 }
 							 

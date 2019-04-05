@@ -4,10 +4,13 @@
  */
 package migtron.tron.cv.grid;
 
+import java.awt.Point;
 import java.awt.Rectangle;
+import migtron.tron.cv.Window;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
 /**
@@ -22,6 +25,7 @@ public class SampleGrid extends Grid
 {
     protected Mat matSamples;   // samples matrix (short precision)
     protected Rectangle sampledWindow;   // sampled window (in grid units)
+    protected short focusSamples;     // samples in the focused node
 
     public SampleGrid(int repW, int repH, float reductionFactor)
     {
@@ -30,33 +34,60 @@ public class SampleGrid extends Grid
         matSamples = Mat.zeros(h, w, CvType.CV_16UC1);    
         // create sampled window (negative values for non-existant window)
         sampledWindow = new Rectangle(0, 0, -1, -1);    
+        focusSamples = 0;
     }    
         
     public Mat getSamplesMatrix() {return matSamples;}
+    /**
+     * Gets the sampled window 
+     * @return the sampledWindow 
+     */
     public Rectangle getSampledWindow() {return sampledWindow;}
-    
-    // get the number of samples of the focused node
-    public short getNodeSamples()
+    /**
+     * Gets the sampled window in openCV form
+     * @return the sampledWindow converted to opencv Rect
+     */
+    public Rect getSampledWindowCV() 
     {
-        short[] data = new short[1];
-        matSamples.get(focus.y, focus.x, data);        
-        return data[0];
+        return Window.rectangleJava2CV(sampledWindow);        
+    }        
+
+    // get the number of samples of the focused node
+    public short getFocusSamples() {return focusSamples;}
+    
+    // set grid focus to a represented matrix position 
+    // it internally gets the number of samples in the focused node
+    // returns true if focus inside limits, false otherwise
+    @Override
+    public boolean focus(int x, int y)
+    {   
+        boolean bok = super.focus(x, y);
+        
+        if (bok)
+        {
+            short[] data = new short[1];
+            matSamples.get(focus.y, focus.x, data);        
+            focusSamples = data[0];            
+        }
+        return bok;
+    }
+
+    // set grid focus to a represented matrix position 
+    // it internally gets the number of samples in the focused node
+    // returns true if focus inside limits, false otherwise
+    @Override
+    public boolean focus(Point point)
+    {
+        return focus(point.x, point.y);
     }
     
     // add a new sample to the focused node
-    public void addNodeSample()
+    // it internally updates the sampled window
+    public void addSample()
     {
-        short prevSamples = getNodeSamples();
-        setNodeSamples(prevSamples + 1);
-        // increase the sampled window
-        sampledWindow.add(focus);
-    }
-    
-    // set the number of samples of the focused node
-    private void setNodeSamples(int samples)
-    {
-        short[] data = {(short)samples};
+        short[] data = {++focusSamples};
         matSamples.put(focus.y, focus.x, data);                
+        sampledWindow.add(focus);
     }
     
     // clear sample grid 
@@ -66,6 +97,7 @@ public class SampleGrid extends Grid
         {
             matSamples.setTo(new Scalar(0.0));
             sampledWindow = new Rectangle(0, 0, -1, -1);    // negative values for non-existant window
+            focusSamples = 0;
         }
     }
 }

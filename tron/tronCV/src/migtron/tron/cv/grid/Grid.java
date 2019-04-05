@@ -61,9 +61,9 @@ public class Grid extends Matrix
     }
             
     // set focus to the represented matrix position 
-    // the focus is set to the proper representing node
+    // it maps the given position to a grid node
     // returns true if focus inside limits, false otherwise
-    public boolean setMatrixFocus(int x, int y)
+    public boolean focus(int x, int y)
     {    
         // get equivalent node
         Vec2i node = getNodeMapping(x, y);
@@ -75,15 +75,15 @@ public class Grid extends Matrix
     }
 
     // set grid focus to a represented matrix position 
-    // the focus is set to the node representing the given matrix position
+    // it maps the given position to a grid node
     // returns true if focus inside limits, false otherwise
-    public boolean setMatrixFocus(Point point)
+    public boolean focus(Point point)
     {
-        return Grid.this.setMatrixFocus(point.x, point.y);
+        return focus(point.x, point.y);
     }
 
     // convert given window in matrix units to equivalent window in grid units
-    public Rect matrixWindow2gridWindow(Rect window)
+    public Rect windowMatrix2GridCoordinates(Rect window)
     {
         // check & correct window limits for safe grid computation
         limitRepresentedWindow(window);
