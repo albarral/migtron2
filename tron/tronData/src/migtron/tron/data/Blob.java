@@ -33,19 +33,7 @@ public class Blob extends Ellipse implements Cloneable
     {
         this(new Ellipse(pos, covs), mass);
     }    
-            
-    public Blob()
-    {
-        this(new Ellipse(), 0);
-    }
-
-    public Blob(Blob blob)
-    {
-        super((Ellipse)blob);
-        mass = blob.mass;
-        shapeFactor = blob.shapeFactor;
-    }    
-    
+                
     @Override
     public Object clone() // throws CloneNotSupportedException 
     {

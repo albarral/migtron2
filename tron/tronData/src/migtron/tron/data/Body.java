@@ -2,10 +2,9 @@
  *  Copyright (C) 2019 by Migtron Robotics   
  *  albarral@migtron.com
  */
-package migtron.tron.vision;
+package migtron.tron.data;
 
 import migtron.tron.cv.Mask;
-import migtron.tron.data.ColorBlob;
 import migtron.tron.math.Ellipse;
 
 import org.opencv.core.Mat;
@@ -24,36 +23,18 @@ public class Body extends ColorBlob implements Cloneable
 
     public Body(ColorBlob colorBlob, Mask mask)
     {
-        super(colorBlob);        
-        this.mask = new Mask(mask);
+        super((Blob)colorBlob, colorBlob.rgbColor);        
+        this.mask = (Mask)mask.clone();
     }    
-        
-    public Body(Mask mask)
-    {
-        this.mask = new Mask(mask);
-        // compute blob from mask
-        computeBlob();
-    }
-    
-    public Body(Body body)
-    {
-        super((ColorBlob)body);
-        mask = new Mask(body.mask);
-    }    
-    
+                
     @Override
     public Object clone()
     {
-        try {
-            // all members automatically copied
-            // then class members cloned for deep copy
-            Body cloned = (Body)super.clone();
-            cloned.mask = (Mask)mask.clone();
-            return cloned;
-        }
-        catch (CloneNotSupportedException e) {
-         throw new AssertionError();
-      }                
+        // all members automatically copied
+        // then class members cloned for deep copy
+        Body cloned = (Body)super.clone();
+        cloned.mask = (Mask)mask.clone();
+        return cloned;
     }
     
     public Mask getMask() {return mask;}    
@@ -61,7 +42,7 @@ public class Body extends ColorBlob implements Cloneable
     {
         this.mask = (Mask)mask.clone();
         // recompute blob from new mask
-        computeBlob();
+        updateBlob();
     }
 
     @Override
@@ -94,7 +75,7 @@ public class Body extends ColorBlob implements Cloneable
     }
 
     // recomputes the blob from the body's mask
-    private void computeBlob()
+    private void updateBlob()
     {
         Ellipse ellipse = mask.computeEllipse();
         super.copy(ellipse);
