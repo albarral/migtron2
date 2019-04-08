@@ -41,15 +41,6 @@ public class Ellipse implements Cloneable
         this(new Float(0, 0), new Vec3f(0, 0, 0));
     }
     
-    public Ellipse(Ellipse ellipse)
-    {
-        pos = (Float)ellipse.getPosition().clone();
-        covs = new Vec3f(ellipse.covs);
-        width = ellipse.width;
-        height = ellipse.height;
-        angle = ellipse.angle;
-    }    
-    
     @Override
     public Object clone()
     {
@@ -86,8 +77,7 @@ public class Ellipse implements Cloneable
     public void copy(Ellipse ellipse)
     {
         pos = (Float)ellipse.pos.clone();
-        try {covs = (Vec3f)ellipse.covs.clone();}            
-        catch (CloneNotSupportedException e) {}
+        covs = (Vec3f)ellipse.covs.clone();            
         width = ellipse.width;
         height = ellipse.height;
         angle = ellipse.angle;
