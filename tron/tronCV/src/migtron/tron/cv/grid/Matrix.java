@@ -17,7 +17,7 @@ import org.opencv.core.Rect;
 * @author albarral
  */
 
-public class Matrix
+public class Matrix implements Cloneable
 {
     // 
 
@@ -70,6 +70,23 @@ public class Matrix
         // define the prefixed locations
         informLocations();
     }    
+
+    @Override
+    public Object clone()
+    {
+        try {
+            Matrix cloned = (Matrix)super.clone();
+            cloned.focus = (Point)focus.clone();
+            cloned.window = (Rectangle)window.clone();
+            cloned.relWindow = (Rectangle)relWindow.clone();
+            cloned.xLocations = xLocations.clone();
+            cloned.yLocations = yLocations.clone();
+            return cloned;
+        }
+        catch (CloneNotSupportedException e) {
+         throw new AssertionError();
+      }        
+    }
         
     public int geWidth() {return w;};
     public int getHeight() {return h;};

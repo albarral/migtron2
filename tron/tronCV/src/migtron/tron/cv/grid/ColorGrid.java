@@ -24,7 +24,7 @@ import org.opencv.core.Scalar;
 * @author albarral
  */
 
-public class ColorGrid extends SampleGrid
+public class ColorGrid extends SampleGrid implements Cloneable
 {
     protected Mat matColor;   // RGB color matrix (float precision)
     private Vec3f focusColor;     // RGB color in the focused node
@@ -36,7 +36,16 @@ public class ColorGrid extends SampleGrid
         matColor = Mat.zeros(h, w, CvType.CV_32FC3);    
         focusColor = new Vec3f();
     }    
-        
+
+    @Override
+    public Object clone()
+    {
+        ColorGrid cloned = (ColorGrid)super.clone();
+        cloned.matColor = matColor.clone();
+        cloned.focusColor = (Vec3f)focusColor.clone();
+        return cloned;
+    }
+
     public Mat getColorMatrix() {return matColor;}    
     // get the color of the focused node
     public Vec3f getFocusColor() {return focusColor;}

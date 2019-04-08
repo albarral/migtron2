@@ -21,7 +21,7 @@ import org.opencv.core.Scalar;
 * @author albarral
  */
 
-public class SampleGrid extends Grid
+public class SampleGrid extends Grid implements Cloneable
 {
     protected Mat matSamples;   // samples matrix (short precision)
     protected Rectangle sampledWindow;   // sampled window (in grid units)
@@ -36,7 +36,16 @@ public class SampleGrid extends Grid
         sampledWindow = new Rectangle(0, 0, -1, -1);    
         focusSamples = 0;
     }    
-        
+
+    @Override
+    public Object clone()
+    {
+        SampleGrid cloned = (SampleGrid)super.clone();
+        cloned.matSamples = matSamples.clone();
+        cloned.sampledWindow = (Rectangle)sampledWindow.clone();
+        return cloned;
+    }
+    
     public Mat getSamplesMatrix() {return matSamples;}
     /**
      * Gets the sampled window 

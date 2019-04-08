@@ -20,7 +20,7 @@ import org.opencv.core.Rect;
 * @author albarral
  */
 
-public class Grid extends Matrix
+public class Grid extends Matrix implements Cloneable
 {
     private int repW;  // width of represented matrix
     private int repH;  // height of represented matrix
@@ -43,6 +43,14 @@ public class Grid extends Matrix
         defineMapping();
     }    
         
+    @Override
+    public Object clone()
+    {
+        Grid cloned = (Grid)super.clone();
+        cloned.mapCoordinates = mapCoordinates.clone();
+        return cloned;
+    }
+    
     public int getRepresentedWidth() {return repW;};
     public int getRepresentedHeight() {return repH;};
     public float getReductionFactor() {return reductionFactor;};
