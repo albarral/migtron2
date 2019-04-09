@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import migtron.tron.cv.Window;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -97,6 +98,30 @@ public class SampleGrid extends Grid implements Cloneable
         short[] data = {++focusSamples};
         matSamples.put(focus.y, focus.x, data);                
         sampledWindow.add(focus);
+    }
+    
+    /**
+     * Merge this sample grid with another one (of the same size). 
+     * It adds both sampled windows and both samples matrices. Only done if both grids have the same size.
+     * @return true if merge done, false otherwise
+     */
+    public boolean merge(SampleGrid sampleGrid)
+    {
+        // skip if grids have different sizes
+        if (!matSamples.size().equals(sampleGrid.matSamples.size()))
+            return false;
+
+        // compute union of sampled windows
+        sampledWindow = sampledWindow.union(sampleGrid.sampledWindow);
+
+        // roi both samples matrices
+        Rect union = getSampledWindowCV();
+        Mat matSamples1 = matSamples.submat(union);
+        Mat matSamples2 = sampleGrid.matSamples.submat(union);
+
+        // add both samples matrices (leaving result in this grid)
+        Core.add(matSamples1, matSamples2, matSamples1);
+        return true;
     }
     
     // clear sample grid 

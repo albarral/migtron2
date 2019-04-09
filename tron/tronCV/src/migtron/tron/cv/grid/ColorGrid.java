@@ -8,6 +8,7 @@ import java.awt.Point;
 import migtron.tron.cv.AverageCV;
 import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
+import org.opencv.core.Core;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -110,6 +111,30 @@ public class ColorGrid extends SampleGrid implements Cloneable
         return new Vec3f((float)average.x, (float)average.y, (float)average.z);
     }    
 
+    /**
+     * Merge this color grid with another one (of the same size). 
+     * It adds both color matrices and the inherited sample grids. Only done if both grids have the same size.
+     * @return true if merge done, false otherwise
+     */
+    public boolean merge(ColorGrid colorGrid)
+    {
+        // skip if grids have different sizes
+        if (super.merge(colorGrid))
+        {
+            // roi both color matrices
+            Rect union = getSampledWindowCV();
+            Mat matColor1 = matColor.submat(union);
+            Mat matColor2 = colorGrid.matColor.submat(union);
+
+            // compute average of both color matrices (leaving result in this grid)
+            Core.add(matColor1, matColor2, matColor1);
+            Core.multiply(matColor1, new Scalar(0.5), matColor1);
+            return true;
+        }
+        else
+            return false;
+    }
+    
     // clear the color grid
     @Override
     public void clear()
