@@ -64,6 +64,7 @@ public class Body extends ColorBlob implements Cloneable
         super.merge((ColorBlob)oBody);
         // merge mask    
         mask.merge(oBody.mask);
+        // no need to update the blob (it's been merged internally)
     }
 
     // compute the overlapped area between this body and another one

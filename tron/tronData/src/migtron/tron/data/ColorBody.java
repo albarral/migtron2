@@ -9,7 +9,7 @@ import migtron.tron.math.Vec3f;
 
 /**
 * This class represents a 2D colored body. 
-* It's a Body with a color grid (a reduced representation of the body's color)
+* It's a Body with a color grid (a reduced representation of the body color)
 * @author albarral
  */
 
@@ -52,22 +52,10 @@ public class ColorBody extends Body implements Cloneable
     {
         // merge body part
         super.merge((Body)colorBody);
-                
-//    // compute union of windows
-//    gridWindow = gridWindow | oColorBody.gridWindow;    
-//
-//    // roi body grids
-//    cv::Mat massGridROI = massGrid(gridWindow);
-//    cv::Mat rgbGridROI = rgbGrid(gridWindow);
-//    // roi body2 grids
-//    cv::Mat massGrid2ROI = oColorBody.massGrid(gridWindow);
-//    cv::Mat rgbGrid2ROI = oColorBody.rgbGrid(gridWindow);
-//
-//    // add mass grids
-//    massGridROI += massGrid2ROI;
-//    // average of color grids
-//    rgbGridROI += rgbGrid2ROI;
-//    rgbGridROI = 0.5 * rgbGridROI;
+        // merge color grid
+        colorGrid.merge(colorBody.colorGrid);
+        // recompute blob color from new color grid
+        updateBlobColor();
     }
 
     // recompute the blob color from the color grid

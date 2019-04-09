@@ -63,7 +63,7 @@ public class ColorBlob extends Blob implements Cloneable
     public void merge(ColorBlob colorBlob2)
     {
         // merge blobs
-        super.merge(colorBlob2);
+        super.merge((Blob)colorBlob2);
         // merge colors
         Vec3f newRGB = RGBColor.mergeValues(rgbColor, colorBlob2.getRGB(), mass, colorBlob2.getMass());
         // update rgb (hsv automatically updated)
