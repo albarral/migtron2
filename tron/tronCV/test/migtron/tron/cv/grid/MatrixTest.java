@@ -33,27 +33,30 @@ public class MatrixTest {
     public void testSetFocus() 
     {
         System.out.println("setFocus");
-    
-        Matrix matrix = new Matrix(100, 100);
+        
+        int w = 100;
+        int h = 50;
+        Matrix matrix = new Matrix(w, h);
         
         int oks = 0;
         int kos = 0;
         int smalls = 0;
-        for (int y=0; y<105; y++)
+        int x = 50;
+        for (int y=0; y<55; y++)
         {
-            if (matrix.setFocus(50, y))
+            if (matrix.setFocus(x, y))
             {
                 oks++;
                 if (matrix.getWindow().height < 3)
                     smalls++;                
-
-                System.out.println("focus = " + matrix.getFocus() + ", window = " + matrix.getWindow());                    
             }
             else
                 kos++;            
+
+            System.out.println("(x,y) = " + x + "," + y + ", focus = " + matrix.getFocus().toString() + ", window = " + matrix.getWindow());                    
         }
         
-        int expOks = 100;
+        int expOks = h;
         int expSmalls = 2;
         Assert.assertTrue((oks == expOks) && (smalls == expSmalls));
     }

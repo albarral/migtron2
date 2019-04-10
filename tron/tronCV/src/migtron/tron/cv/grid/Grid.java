@@ -97,11 +97,13 @@ public class Grid extends Matrix implements Cloneable
         limitRepresentedWindow(window);
 
         // translate the image window to a grid window            
+        // get tl node
         Vec2i node1 = getNodeMapping(window.x, window.y);
+        // get br node
         org.opencv.core.Point br = window.br();
         Vec2i node2 = getNodeMapping((int)br.x, (int)br.y);                                
         if (node1 != null && node2 != null)
-            return new Rect(node1.getY(), node1.getX(), node2.getY()-node1.getY(), node2.getX()-node1.getX());        
+            return new Rect(node1.getX(), node1.getY(), node2.getX()-node1.getX(), node2.getY()-node1.getY());        
         else
             return null;
     }
@@ -124,16 +126,18 @@ public class Grid extends Matrix implements Cloneable
     // internal map creation for mapping matrix coordinates to grid ones
     private void defineMapping()
     {        
-        int row, col;
+        int x2, y2;
         // walk rows
         for (int y=0; y<repH; y++)
         {
-            row = Math.round(y*reductionFactor);                    
+            // avoid rounding (in order not to place nodes in borders)
+            y2 = (int)(y*reductionFactor);                    
             // walk columns
             for (int x=0; x<repW; x++)
             {    
-                col = Math.round(x*reductionFactor);    
-                Vec2i vector = new Vec2i(row, col);                
+                // avoid rounding (in order not to place nodes in borders)
+                x2 = (int)(x*reductionFactor);    
+                Vec2i vector = new Vec2i(x2, y2);                
                 mapCoordinates.put(y, x, vector.data);
             }
         }        
