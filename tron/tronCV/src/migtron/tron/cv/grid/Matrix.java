@@ -5,7 +5,6 @@
 package migtron.tron.cv.grid;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 
 import migtron.tron.cv.Window;
 import org.opencv.core.Rect;
@@ -42,8 +41,8 @@ public class Matrix implements Cloneable
     protected int w;       // matrix width
     protected int h;       // matrix height
     protected Point focus;   // focused point
-    protected Rectangle window; // neighbourhood window (in matrix coordinates)
-    private Rectangle relWindow;  // relative neighbourhood window (in setFocus coordinates)
+    protected Rect focusWindow; // neighbourhood window (in matrix coordinates)
+    private Rect relWindow;  // relative neighbourhood window (in focus coordinates)
     private eLocation xLocation;    // setFocus location in x axis
     private eLocation yLocation;    // setFocus location in y axis
     private eLocation[] xLocations; // prefixed locations in x axis (precomputed for efficiency)
@@ -61,8 +60,8 @@ public class Matrix implements Cloneable
         this.w = w;
         this.h = h;
         focus = new Point();
-        window = new Rectangle();
-        relWindow = new Rectangle();
+        focusWindow = new Rect();
+        relWindow = new Rect();
         xLocation = null;
         yLocation = null;
         xLocations = new eLocation[w];
@@ -77,8 +76,8 @@ public class Matrix implements Cloneable
         try {
             Matrix cloned = (Matrix)super.clone();
             cloned.focus = (Point)focus.clone();
-            cloned.window = (Rectangle)window.clone();
-            cloned.relWindow = (Rectangle)relWindow.clone();
+            cloned.focusWindow = focusWindow.clone();
+            cloned.relWindow = relWindow.clone();
             cloned.xLocations = xLocations.clone();
             cloned.yLocations = yLocations.clone();
             return cloned;
@@ -92,26 +91,18 @@ public class Matrix implements Cloneable
     public int getHeight() {return h;};
     public Point getFocus() {return focus;}    
     /**
-     * Gets the neighbourhood window 
+     * Get the focus neighbourhood window 
      * @return the window 
      */
-    public Rectangle getWindow() {return window;}
+    public Rect getFocusWindow() {return focusWindow;}
     /**
-     * Gets the neighbourhood window in openCV form
-     * @return the window converted to opencv Rect
-     */
-    public Rect getWindowCV() 
-    {
-        return Window.rectangleJava2CV(window);        
-    }        
-    /**
-     * Set matrix setFocus to given position. 
+     * Set matrix focus to given position. 
      * It checks for limits and recomputes the neigbourhood window.
-     * @param x x component of setFocus position
-     * @param y y component of setFocus position
-     * @return true if setFocus inside limits, false otherwise
+     * @param x focus x component
+     * @param y focus y component
+     * @return true if focus inside limits, false otherwise
      */
-    public boolean setFocus(int x, int y)
+    public boolean focus(int x, int y)
     {    
         // safety check
         if (x < w && y < h)
@@ -131,9 +122,8 @@ public class Matrix implements Cloneable
                 updateWindowVertically(yLocation);
             }
 
-            // recompute the absolute window
-            window = new Rectangle(relWindow);
-            window.translate(x, y);
+            // recompute the focus neighborhood window
+            focusWindow = Window.translate(relWindow, x, y);
             return true; 
         }
         else
@@ -143,12 +133,12 @@ public class Matrix implements Cloneable
     /**
      * Set matrix focus to given position. 
      * It checks for limits and recomputes the neigbourhood window.
-     * @param point setFocus position
-     * @return true if setFocus inside limits, false otherwise
+     * @param point new focus position
+     * @return true if focus inside limits, false otherwise
      */
-    public boolean setFocus(Point point)
+    public boolean focus(Point point)
     {
-        return setFocus(point.x, point.y);
+        return focus(point.x, point.y);
     }
         
     // defines the prefixed location arrays

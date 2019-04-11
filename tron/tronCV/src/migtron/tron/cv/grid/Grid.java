@@ -71,13 +71,14 @@ public class Grid extends Matrix implements Cloneable
     // set focus to the represented matrix position 
     // it maps the given position to a grid node
     // returns true if focus inside limits, false otherwise
+    @Override
     public boolean focus(int x, int y)
     {    
         // get equivalent node
         Vec2i node = getNodeMapping(x, y);
         // if found, move focus to it
         if (node != null)
-            return super.setFocus(node.getX(), node.getY());
+            return super.focus(node.getX(), node.getY());
         else
             return false;
     }
@@ -85,6 +86,7 @@ public class Grid extends Matrix implements Cloneable
     // set grid focus to a represented matrix position 
     // it maps the given position to a grid node
     // returns true if focus inside limits, false otherwise
+    @Override
     public boolean focus(Point point)
     {
         return focus(point.x, point.y);
@@ -142,5 +144,13 @@ public class Grid extends Matrix implements Cloneable
             }
         }        
     }
+    
+    @Override
+    public String toString()
+    {
+        String desc = "Grid [repW x repH = " + String.valueOf(repW) + " x " + String.valueOf(repH) + ", reduction factor = " + String.valueOf(reductionFactor) + "]";
+        return desc;
+    }
+    
 }
 							 

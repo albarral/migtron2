@@ -90,9 +90,8 @@ public class ColorGrid extends SampleGrid implements Cloneable
     // get the grid's local color, the average color of the node's neighbourhood
     public Vec3f getLocalColor()
     {
-        Rect neighbourhood = getWindowCV();                
-        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(neighbourhood));
-        MatOfInt samples = new MatOfInt(matSamples.submat(neighbourhood));
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(focusWindow));
+        MatOfInt samples = new MatOfInt(matSamples.submat(focusWindow));
         
         Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
         Vec3f color = new Vec3f((float)average.x, (float)average.y, (float)average.z);
@@ -103,9 +102,8 @@ public class ColorGrid extends SampleGrid implements Cloneable
     // get the grid's global color, the average color of all grid nodes
     public Vec3f getGlobalColor()
     {
-        Rect sampled = getSampledWindowCV();                
-        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(sampled));
-        MatOfInt samples = new MatOfInt(matSamples.submat(sampled));
+        MatOfPoint3f colors = new MatOfPoint3f(matColor.submat(sampledWindow));
+        MatOfInt samples = new MatOfInt(matSamples.submat(sampledWindow));
         
         Point3 average = AverageCV.compute3DWeightedAverage(colors.toArray(), samples.toArray());
         return new Vec3f((float)average.x, (float)average.y, (float)average.z);
@@ -122,9 +120,8 @@ public class ColorGrid extends SampleGrid implements Cloneable
         if (super.merge(colorGrid))
         {
             // roi both color matrices
-            Rect union = getSampledWindowCV();
-            Mat matColor1 = matColor.submat(union);
-            Mat matColor2 = colorGrid.matColor.submat(union);
+            Mat matColor1 = matColor.submat(sampledWindow);
+            Mat matColor2 = colorGrid.matColor.submat(sampledWindow);
 
             // compute average of both color matrices (leaving result in this grid)
             Core.add(matColor1, matColor2, matColor1);

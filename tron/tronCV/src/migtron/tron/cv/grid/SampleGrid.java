@@ -5,7 +5,6 @@
 package migtron.tron.cv.grid;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import migtron.tron.cv.Window;
 
 import org.opencv.core.Core;
@@ -25,7 +24,7 @@ import org.opencv.core.Scalar;
 public class SampleGrid extends Grid implements Cloneable
 {
     protected Mat matSamples;   // samples matrix (short precision)
-    protected Rectangle sampledWindow;   // sampled window (in grid units)
+    protected Rect sampledWindow;   // sampled window (in grid units)
     protected short focusSamples;     // samples in the focused node
 
     public SampleGrid(int repW, int repH, float reductionFactor)
@@ -34,7 +33,7 @@ public class SampleGrid extends Grid implements Cloneable
         // create samples matrix
         matSamples = Mat.zeros(h, w, CvType.CV_16UC1);    
         // create sampled window (negative values for non-existant window)
-        sampledWindow = new Rectangle(0, 0, -1, -1);    
+        sampledWindow = new Rect();    
         focusSamples = 0;
     }    
 
@@ -43,7 +42,7 @@ public class SampleGrid extends Grid implements Cloneable
     {
         SampleGrid cloned = (SampleGrid)super.clone();
         cloned.matSamples = matSamples.clone();
-        cloned.sampledWindow = (Rectangle)sampledWindow.clone();
+        cloned.sampledWindow = sampledWindow.clone();
         return cloned;
     }
     
@@ -52,16 +51,7 @@ public class SampleGrid extends Grid implements Cloneable
      * Gets the sampled window 
      * @return the sampledWindow 
      */
-    public Rectangle getSampledWindow() {return sampledWindow;}
-    /**
-     * Gets the sampled window in openCV form
-     * @return the sampledWindow converted to opencv Rect
-     */
-    public Rect getSampledWindowCV() 
-    {
-        return Window.rectangleJava2CV(sampledWindow);        
-    }        
-
+    public Rect getSampledWindow() {return sampledWindow;}
     // get the number of samples of the focused node
     public short getFocusSamples() {return focusSamples;}
     
@@ -97,7 +87,7 @@ public class SampleGrid extends Grid implements Cloneable
     {
         short[] data = {++focusSamples};
         matSamples.put(focus.y, focus.x, data);                
-        sampledWindow.add(focus);
+        sampledWindow = Window.addPoint(sampledWindow, focus);
     }
     
     /**
@@ -112,12 +102,11 @@ public class SampleGrid extends Grid implements Cloneable
             return false;
 
         // compute union of sampled windows
-        sampledWindow = sampledWindow.union(sampleGrid.sampledWindow);
+        sampledWindow = Window.getUnion(sampledWindow, sampleGrid.sampledWindow);
 
         // roi both samples matrices
-        Rect union = getSampledWindowCV();
-        Mat matSamples1 = matSamples.submat(union);
-        Mat matSamples2 = sampleGrid.matSamples.submat(union);
+        Mat matSamples1 = matSamples.submat(sampledWindow);
+        Mat matSamples2 = sampleGrid.matSamples.submat(sampledWindow);
 
         // add both samples matrices (leaving result in this grid)
         Core.add(matSamples1, matSamples2, matSamples1);
@@ -130,9 +119,16 @@ public class SampleGrid extends Grid implements Cloneable
         if (!matSamples.empty())          
         {
             matSamples.setTo(new Scalar(0.0));
-            sampledWindow = new Rectangle(0, 0, -1, -1);    // negative values for non-existant window
+            sampledWindow = new Rect(); 
             focusSamples = 0;
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        String desc = "SampleGrid [" + super.toString() + ", sampled window = " + sampledWindow.toString() + "\n" + matSamples.dump() + "]";
+        return desc;
     }
 }
 							 

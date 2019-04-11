@@ -16,16 +16,31 @@ import org.opencv.core.Rect;
  */
 public class Window 
 {
-    // transform cv rectangle to java form
+    // transform cv rectangle to java form (dimensions treated different)
     public static Rectangle rectangleCV2Java(Rect rect)
     {
-        return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+        return new Rectangle(rect.x, rect.y, rect.width-1, rect.height-1);
     }
 
-    // transform java rectangle to cv form
+    // transform java rectangle to cv form (dimensions treated different)
     public static Rect rectangleJava2CV(Rectangle rectangle)
     {
-        return new Rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        return new Rect(rectangle.x, rectangle.y, rectangle.width+1, rectangle.height+1);
+    }
+        
+    // add point to window
+    public static Rect addPoint(Rect window, Point point)
+    {
+        // if point out of window, enlarge window
+        if (!window.contains(new org.opencv.core.Point(point.x, point.y)))
+        {
+            Rectangle rectangle = rectangleCV2Java(window);
+            rectangle.add(point);
+            return rectangleJava2CV(rectangle);            
+        }
+        // otherwise do nothing
+        else
+            return window;
     }
 
     // get the rectangle resulting from the intersection of two windows
