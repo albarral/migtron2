@@ -44,16 +44,16 @@ public class MatrixTest {
         int x = 50;
         for (int y=0; y<55; y++)
         {
-            if (matrix.setFocus(x, y))
+            if (matrix.focus(x, y))
             {
                 oks++;
-                if (matrix.getWindow().height < 3)
+                if (matrix.getFocusWindow().height < 3)
                     smalls++;                
             }
             else
                 kos++;            
 
-            System.out.println("(x,y) = " + x + "," + y + ", focus = " + matrix.getFocus().toString() + ", window = " + matrix.getWindow());                    
+            System.out.println("(x,y) = " + x + "," + y + ", focus = " + matrix.getFocus().toString() + ", window = " + matrix.getFocusWindow());                    
         }
         
         int expOks = h;

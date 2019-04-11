@@ -6,13 +6,13 @@ package migtron.tron.cv.grid;
 
 import migtron.tron.cv.NativeOpenCV;
 
-import java.awt.Rectangle;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.opencv.core.Rect;
 
 /**
@@ -75,21 +75,32 @@ public class GridTest
         System.out.println("focus");
 
         System.out.println("horizontal walk");
-        int y = 20;
-        for (int x=0; x<w; x++)
-        {
-            grid.focus(x, y);            
-            System.out.println("(x,y) = " + x + "," + y + ", focus = " + grid.getFocus().toString());                    
-        }
+        int x0 = 0;
+        int y0 = 20;
+        int width = w;
+        doWalk(grid, x0, y0, width, 1);
 
         System.out.println("vertical walk");
-        int x = 20;
-        for (y=0; y<h; y++)
-        {
-            grid.focus(x, y);            
-            System.out.println("(x,y) = " + x + "," + y + ", focus = " + grid.getFocus().toString());                    
-        }
+        int x2 = 20;
+        int y2 = 0;
+        int height = h;
+        doWalk(grid, x2, y2, 1, height);
         
         Assert.assertTrue(true);
     }    
+    
+    // walks a grid covering all points in a specified window (defined by a top-left point (x0, y0) and with w x h dimensions)
+    private void doWalk(Grid grid, int x0, int y0, int w, int h)
+    {
+        System.out.println("walking grid from (x,y) = " + x0 + "," + y0 + ", w = " + w + ", h = " + h);                    
+        int x1 = x0+w;
+        int y1 = y0+h;
+        for (int x=x0; x<x1; x++)
+        for (int y=y0; y<y1; y++)
+        {
+            grid.focus(x, y);            
+            System.out.println("sample (x,y) = " + x + "," + y + ", node = " + grid.getFocus().toString());                    
+        }        
+    }
+    
 }

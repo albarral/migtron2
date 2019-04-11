@@ -6,13 +6,14 @@ package migtron.tron.cv.grid;
 
 import migtron.tron.cv.NativeOpenCV;
 
-import java.awt.Rectangle;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.opencv.core.Rect;
 
 /**
  *
@@ -22,6 +23,7 @@ public class SampleGridTest
 {
     private int w;
     private int h;
+    float reductionFactor;
     private SampleGrid sampleGrid;
     
     public SampleGridTest() {
@@ -40,7 +42,7 @@ public class SampleGridTest
     public void setUp() {
         w = 100;
         h = 50;
-        float reductionFactor = 0.1f;
+        reductionFactor = 0.1f;
         sampleGrid = new SampleGrid(w, h, reductionFactor);                
     }
     
@@ -52,14 +54,21 @@ public class SampleGridTest
      * Test of getSampledWindow method, of class SampleGrid.
      */
     @Test
-    public void testGetSampledWindow() {
+    public void testGetSampledWindow() 
+    {
         System.out.println("getSampledWindow");
-        SampleGrid instance = null;
-        Rectangle expResult = null;
-        Rectangle result = instance.getSampledWindow();
+        
+        int x0 = 0;
+        int y0 = 20;
+        int width = 20;
+        int height = 20;
+        doWalk(sampleGrid, x0, y0, width, height);
+        System.out.println("grid ..." + sampleGrid.toString());                    
+        
+        Rect expResult = new Rect((int)(x0*reductionFactor), (int)(y0*reductionFactor), (int)(width*reductionFactor), (int)(height*reductionFactor));
+        Rect result = sampleGrid.getSampledWindow();
+        System.out.println("sampled window = " + result);                    
         Assert.assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        Assert.fail("The test case is a prototype.");
     }
 
 
@@ -71,13 +80,18 @@ public class SampleGridTest
     {
         System.out.println("addSample");
         
-        int walk = 10;
-        doWalk(0, 20, walk-1, 20);
-
+        int x0 = 0;
+        int y0 = 20;
+        int width = 8;
+        doWalk(sampleGrid, x0, y0, width, 1);
+        System.out.println("grid ..." + sampleGrid.toString());                    
+     
+        sampleGrid.focus(x0, y0);
         int samples = sampleGrid.getFocusSamples();
         System.out.println("focus = " + sampleGrid.getFocus().toString());                    
-        System.out.println("samples = " + samples);                    
-        int expResult = walk;
+        System.out.println("samples = " + samples);        
+        int nodeSize = (int)(1/reductionFactor); 
+        int expResult = Math.min(nodeSize, width);
         
         Assert.assertEquals(expResult, samples);
     }
@@ -86,26 +100,61 @@ public class SampleGridTest
      * Test of merge method, of class SampleGrid.
      */
     @Test
-    public void testMerge() {
+    public void testMerge() 
+    {
         System.out.println("merge");
-        SampleGrid sampleGrid = null;
-        SampleGrid instance = null;
-        boolean expResult = false;
-        boolean result = instance.merge(sampleGrid);
-        Assert.assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        Assert.fail("The test case is a prototype.");
+    
+        // create second grid (equal to first on)
+        SampleGrid sampleGrid2 = (SampleGrid)sampleGrid.clone();
+        
+        // walk first grid
+        int x0 = 10;
+        int y0 = 10;
+        int width = 20;
+        int height = 20;
+        doWalk(sampleGrid, x0, y0, width, height);
+        System.out.println("grid 1 ..." + sampleGrid.toString());                    
+
+        // walk second grid (overlapped with first)
+        int x2 = x0+10;
+        int y2 = y0+10;
+        int width2 = 20;
+        int height2 = 20;
+        doWalk(sampleGrid2, x2, y2, width2, height2);        
+        System.out.println("grid 2 ..." + sampleGrid2.toString());                    
+
+        // write down both samples in a shared node
+        sampleGrid.focus(x2, y2);
+        sampleGrid2.focus(x2, y2);
+        int samples1 = sampleGrid.getFocusSamples();
+        int samples2 = sampleGrid2.getFocusSamples();
+        
+        // merge both grids
+        sampleGrid.merge(sampleGrid2);
+        System.out.println("merged ..." + sampleGrid.toString());                    
+
+        // check merged samples in the shared node
+        sampleGrid.focus(x2, y2);
+        int samples = sampleGrid.getFocusSamples();
+
+        System.out.println("samples1 = " + samples1);                    
+        System.out.println("samples2 = " + samples2);                    
+        System.out.println("samples = " + samples);                            
+        Assert.assertEquals(samples, samples1+samples2);
     }
     
-    // walk all points in the window going from (x0, y0) to (x1, y1) adding a sample at each step
-    private void doWalk(int x0, int y0, int x1, int y1)
+    // walks a sampled grid covering all points in a specified window (defined by a top-left point (x0, y0) and with w x h dimensions)
+    private void doWalk(SampleGrid sampleGrid, int x0, int y0, int w, int h)
     {
-        for (int x=x0; x<=x1; x++)
-        for (int y=y0; y<=y1; y++)
+        System.out.println("walking grid from (x,y) = " + x0 + "," + y0 + ", w = " + w + ", h = " + h);                    
+        int x1 = x0+w;
+        int y1 = y0+h;
+        for (int x=x0; x<x1; x++)
+        for (int y=y0; y<y1; y++)
         {
             sampleGrid.focus(x, y);            
             sampleGrid.addSample();
-            System.out.println("sampled (x,y) = " + x + "," + y);                    
+            //System.out.println("sample (x,y) = " + x + "," + y + ", node = " + sampleGrid.getFocus().toString());                    
         }        
     }
 }
