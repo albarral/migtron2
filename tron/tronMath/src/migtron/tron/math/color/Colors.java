@@ -17,8 +17,12 @@ public class Colors
         eCOLOR_WHITE,
         eCOLOR_GREY,
         eCOLOR_RED,
+        eCOLOR_YELLOW,
+        eCOLOR_ORANGE,
         eCOLOR_GREEN,
-        eCOLOR_BLUE
+        eCOLOR_CYAN,
+        eCOLOR_BLUE,
+        eCOLOR_PURPLE
     }
     
     // get RGB components (in [0, 255] range) of given eColor
@@ -30,27 +34,33 @@ public class Colors
             case eCOLOR_BLACK:
                 color = new Vec3i(0, 0, 0);
                 break;
-
             case eCOLOR_WHITE:
                 color = new Vec3i(255, 255, 255);
-                break;
-                
+                break;                
             case eCOLOR_GREY:
                 color = new Vec3i(128, 128, 128);
-                break;
-                
+                break;                
             case eCOLOR_RED:
                 color = new Vec3i(255, 0, 0);
                 break;
-
+            case eCOLOR_YELLOW:
+                color = new Vec3i(255, 255, 0);
+                break;
+            case eCOLOR_ORANGE:
+                color = new Vec3i(255, 128, 0);
+                break;
             case eCOLOR_GREEN:
                 color = new Vec3i(0, 255, 0);
                 break;
-
+            case eCOLOR_CYAN:
+                color = new Vec3i(0, 255, 255);
+                break;
             case eCOLOR_BLUE:
                 color = new Vec3i(0, 0, 255);
                 break;
-
+            case eCOLOR_PURPLE:
+                color = new Vec3i(255, 0, 255);
+                break;
             default: 
                 // default is black
                 color = new Vec3i(0, 0, 0);
