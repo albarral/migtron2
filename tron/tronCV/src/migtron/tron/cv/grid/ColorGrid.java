@@ -8,14 +8,14 @@ import java.awt.Point;
 import migtron.tron.cv.AverageCV;
 import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
-import org.opencv.core.Core;
+import migtron.tron.math.Vec3i;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
 /**
@@ -76,7 +76,7 @@ public class ColorGrid extends SampleGrid implements Cloneable
     
     // add a new color sample to the focused node
     // the average node color is updated with the given sample
-    public void addColorSample(Vec3f color)
+    public void addColorSample(Vec3i color)
     {
         // set the node's average color with the new sample
         Average3f avgColor = new Average3f(focusColor, focusSamples);
@@ -125,7 +125,7 @@ public class ColorGrid extends SampleGrid implements Cloneable
 
             // compute average of both color matrices (leaving result in this grid)
             Core.add(matColor1, matColor2, matColor1);
-            Core.multiply(matColor1, new Scalar(0.5), matColor1);
+            Core.multiply(matColor1, new Scalar(0.5, 0.5, 0.5), matColor1);
             return true;
         }
         else
@@ -140,6 +140,13 @@ public class ColorGrid extends SampleGrid implements Cloneable
         if (!matColor.empty())            
            matColor.setTo(new Scalar(0.0));
         focusColor = new Vec3f();
+    }
+
+    @Override
+    public String toString()
+    {
+        String desc = "ColorGrid [ matColor:\n" + matColor.dump() + "\n" + super.toString() + "\n]";
+        return desc;
     }
 }
 							 

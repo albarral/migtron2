@@ -63,7 +63,7 @@ public class SampleGridTest
         int width = 20;
         int height = 20;
         doWalk(sampleGrid, x0, y0, width, height);
-        System.out.println("grid ..." + sampleGrid.toString());                    
+        System.out.println("> grid \n" + sampleGrid.toString());                    
         
         Rect expResult = new Rect((int)(x0*reductionFactor), (int)(y0*reductionFactor), (int)(width*reductionFactor), (int)(height*reductionFactor));
         Rect result = sampleGrid.getSampledWindow();
@@ -84,7 +84,7 @@ public class SampleGridTest
         int y0 = 20;
         int width = 8;
         doWalk(sampleGrid, x0, y0, width, 1);
-        System.out.println("grid ..." + sampleGrid.toString());                    
+        System.out.println("> grid \n" + sampleGrid.toString());                    
      
         sampleGrid.focus(x0, y0);
         int samples = sampleGrid.getFocusSamples();
@@ -104,7 +104,7 @@ public class SampleGridTest
     {
         System.out.println("merge");
     
-        // create second grid (equal to first on)
+        // create second grid (equal to first one)
         SampleGrid sampleGrid2 = (SampleGrid)sampleGrid.clone();
         
         // walk first grid
@@ -113,7 +113,7 @@ public class SampleGridTest
         int width = 20;
         int height = 20;
         doWalk(sampleGrid, x0, y0, width, height);
-        System.out.println("grid 1 ..." + sampleGrid.toString());                    
+        System.out.println("> grid1 \n" + sampleGrid.toString());                    
 
         // walk second grid (overlapped with first)
         int x2 = x0+10;
@@ -121,7 +121,7 @@ public class SampleGridTest
         int width2 = 20;
         int height2 = 20;
         doWalk(sampleGrid2, x2, y2, width2, height2);        
-        System.out.println("grid 2 ..." + sampleGrid2.toString());                    
+        System.out.println("> grid2 \n" + sampleGrid2.toString());                    
 
         // write down both samples in a shared node
         sampleGrid.focus(x2, y2);
@@ -131,7 +131,7 @@ public class SampleGridTest
         
         // merge both grids
         sampleGrid.merge(sampleGrid2);
-        System.out.println("merged ..." + sampleGrid.toString());                    
+        System.out.println("> merged \n" + sampleGrid.toString());                    
 
         // check merged samples in the shared node
         sampleGrid.focus(x2, y2);
@@ -146,7 +146,7 @@ public class SampleGridTest
     // walks a sampled grid covering all points in a specified window (defined by a top-left point (x0, y0) and with w x h dimensions)
     private void doWalk(SampleGrid sampleGrid, int x0, int y0, int w, int h)
     {
-        System.out.println("walking grid from (x,y) = " + x0 + "," + y0 + ", w = " + w + ", h = " + h);                    
+        System.out.println("walk grid from (" + x0 + "," + y0 + "), w=" + w + ", h=" + h);                    
         int x1 = x0+w;
         int y1 = y0+h;
         for (int x=x0; x<x1; x++)

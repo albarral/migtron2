@@ -127,7 +127,7 @@ public class SampleGrid extends Grid implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "SampleGrid [" + super.toString() + ", sampled window = " + sampledWindow.toString() + "\n" + matSamples.dump() + "]";
+        String desc = "SampleGrid [ matSamples:\n" + matSamples.dump() + "\nsampled window = " + sampledWindow.toString() + "\n" + super.toString() + "\n]";
         return desc;
     }
 }

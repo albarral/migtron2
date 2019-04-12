@@ -148,7 +148,7 @@ public class Grid extends Matrix implements Cloneable
     @Override
     public String toString()
     {
-        String desc = "Grid [repW x repH = " + String.valueOf(repW) + " x " + String.valueOf(repH) + ", reduction factor = " + String.valueOf(reductionFactor) + "]";
+        String desc = "Grid [rep wxh = " + String.valueOf(repW) + "x" + String.valueOf(repH) + ", reduction factor = " + String.valueOf(reductionFactor) + "]";
         return desc;
     }
     
