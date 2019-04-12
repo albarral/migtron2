@@ -69,9 +69,9 @@ public class RGBColor
             return new Vec3f(r, g, b);
         }
         else if (q1 == 0)
-            return new Vec3f(color2);
+            return (Vec3f)color2.clone();
         else if (q2 == 0)
-            return new Vec3f(color1);            
+            return (Vec3f)color1.clone();
         else
             return new Vec3f();
     }

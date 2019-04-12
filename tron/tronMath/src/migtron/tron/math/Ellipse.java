@@ -26,7 +26,7 @@ public class Ellipse implements Cloneable
     public Ellipse(Float pos, Vec3f covs)
     {
         this.pos = new Float(pos.x, pos.y);
-        this.covs = new Vec3f(covs);
+        this.covs = (Vec3f)covs.clone();
         // on every covariance change, the main axes are recomputed
         updateMainAxes();
     }    

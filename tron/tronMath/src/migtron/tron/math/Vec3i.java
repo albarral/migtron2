@@ -30,11 +30,10 @@ public class Vec3i implements Cloneable
         data = new int[SIZE];
     }
     
-    public Vec3i(Vec3i vector2)
+    // create from float vector
+    public Vec3i(Vec3f vector2)
     {
-        this(vector2.getX(), 
-                vector2.getY(), 
-                vector2.getZ());
+        this((int)vector2.getX(), (int)vector2.getY(), (int)vector2.getZ());
     }
     
     @Override

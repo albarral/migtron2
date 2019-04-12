@@ -22,7 +22,7 @@ public class ColorBlob extends Blob implements Cloneable
     public ColorBlob(Blob blob, Vec3f rgbColor)
     {
         super((Ellipse)blob, blob.mass);
-        this.rgbColor = new Vec3f(rgbColor);
+        this.rgbColor = (Vec3f)rgbColor.clone();
         hsvColor = new Vec3f();
         computeHSV();
     }    

@@ -29,7 +29,8 @@ public class Vec3f implements Cloneable
         data = new float[SIZE];
     }    
 
-    public Vec3f(Vec3f vector2)
+    // create from integer vector
+    public Vec3f(Vec3i vector2)
     {
         this(vector2.getX(), 
                 vector2.getY(), 

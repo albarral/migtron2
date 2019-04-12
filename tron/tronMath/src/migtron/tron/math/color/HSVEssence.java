@@ -32,7 +32,7 @@ public class HSVEssence
                 
     public HSVEssence(Vec3f hsvColor)
     {
-        this.hsvColor = new Vec3f(hsvColor);
+        this.hsvColor = (Vec3f)hsvColor.clone();
         // automatic type computation           
         computeType();
         // high hue discriminance, but low saturation and value discriminances
