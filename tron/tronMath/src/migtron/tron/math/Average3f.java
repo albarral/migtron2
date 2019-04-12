@@ -26,7 +26,7 @@ public class Average3f extends Vec3f
     
     public int getNumSamples() {return numSamples;};
     
-    // update average with new sampled value (and new samples number)
+    // update average with new sampled value representing a number of samples
     public void updateWithSample(Vec3f newValue, int newSamples)
     {
         numSamples += newSamples;
@@ -35,8 +35,23 @@ public class Average3f extends Vec3f
             data[i] += alpha * (newValue.data[i] - data[i]);
     }
 
-    // update average with new sampled value
+    // update average with new sampled value representing a number of samples
+    public void updateWithSample(Vec3i newValue, int newSamples)
+    {
+        numSamples += newSamples;
+        double alpha = 1.0 / numSamples;        
+        for (int i=0; i<SIZE; i++)
+            data[i] += alpha * (newValue.data[i] - data[i]);
+    }
+
+    // update average with new sampled value representing one sample
     public void updateWithSample(Vec3f newValue)
+    {
+        updateWithSample(newValue, 1);
+    }
+
+    // update average with new sampled value representing one sample
+    public void updateWithSample(Vec3i newValue)
     {
         updateWithSample(newValue, 1);
     }
