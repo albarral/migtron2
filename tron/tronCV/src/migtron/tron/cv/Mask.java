@@ -16,6 +16,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 /**
 * This class represents a 2D mask. 
@@ -28,25 +29,22 @@ public class Mask implements Cloneable
 {
     private Mat mat;       // mask matrix
     private Rect window;   // body window in image
-    public static final int TYPE = CvType.CV_8UC1;  // matrix type
+    private final int TYPE = CvType.CV_8UC1;  // byte single channel matrix 
 
     public Mask(Mat mat, Rect window)
     {
-        this.mat = null;
-        this.window = null;
-        set(mat, window);
+        if (!set(mat, window))
+        {
+            this.mat = null;
+            this.window = null;                            
+        }
     }    
 
     public Mask(Mat mat)
     {
         this(mat, new Rect(0, 0, mat.width(), mat.height()));
     }    
-    
-    public Mask(Mask mask)
-    {
-        this(mask.mat, mask.window);
-    }    
-    
+        
     @Override
     public Object clone()
     {
@@ -68,22 +66,20 @@ public class Mask implements Cloneable
     // set mask matrix and window 
     public boolean set(Mat mat, Rect window)
     {
-        boolean bok = false;
-        // check it's a single channel mask
-        if (mat.type() == TYPE)
-        {
-            // and that mask & window are valid (window is contained in mask)
-           if (mat.height() >= window.y+window.height && 
-                   mat.width() >= window.x+window.width && 
-                   !mat.empty())
-            {    
-                // the mask is croped to the window
-                this.mat = mat.submat(window).clone();
-                this.window = window.clone();
-                bok = true;
-            }
+        // check it's a single channel mask        
+        // and that mask & window are valid (window is contained in mask)
+        if (mat.type() == TYPE &&
+                mat.height() >= window.y+window.height && 
+                mat.width() >= window.x+window.width &&                
+                !mat.empty())
+        {    
+            // the mask is croped to the window
+            this.mat = mat.submat(window).clone();
+            this.window = window.clone();
+            return true;
         }
-        return bok;
+        else
+            return false;
     }
     
     public void clear()
@@ -160,6 +156,12 @@ public class Mask implements Cloneable
         Core.compare(mat, new Scalar(value), mat2, Core.CMP_EQ); 
         return mat2;
     }
+        
+    // binarize the mask using a specified threshold value
+    public void binarize(int value)
+    {
+        Imgproc.threshold(mat, mat, value, 255, Imgproc.THRESH_BINARY);
+    }
 
     // merge this mask with another one
     public void merge(Mask mask)
@@ -207,6 +209,35 @@ public class Mask implements Cloneable
         mat = matIntersection;
         window = intersection;
     }
+        
+    // logical and of this mask with another one, resulting in a union size mask
+    public void and(Mask mask)
+    {
+        // get windows intersection
+        Rect intersection = Window.getIntersection(window, mask.window);     
+        // get windows union 
+        Rect union = Window.getUnion(window, mask.window);     
+        // create empty union matrix
+        Mat matUnion = Mat.zeros(union.height, union.width, TYPE); 
+        // translate intersection window to the 3 coordinate systems (2 sources and destination)
+        Point origin1 = new Point(window.x, window.y);
+        Point origin2 = new Point(mask.window.x, mask.window.y);
+        Point origin3 = new Point(union.x, union.y);
+        Rect window1 = Window.translateAxes(intersection, origin1);
+        Rect window2 = Window.translateAxes(intersection, origin2);
+        Rect window3 = Window.translateAxes(intersection, origin3);
+        
+        Mat mat1 = mat.submat(window1);    
+        Mat mat2 = mask.mat.submat(window2);        
+        Mat mat3 = matUnion.submat(window3);    
+
+        Core.bitwise_and(mat1, mat2, mat3);
+
+        // finally update this mask with the intersection result
+        mat = matUnion;
+        window = union;
+    }
+
 
     @Override
     public String toString()
