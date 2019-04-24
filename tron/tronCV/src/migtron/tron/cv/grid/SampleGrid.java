@@ -26,12 +26,13 @@ public class SampleGrid extends Grid implements Cloneable
     protected Mat matSamples;   // samples matrix (short precision)
     protected Rect sampledWindow;   // sampled window (in grid units)
     protected short focusSamples;     // samples in the focused node
+    private final int TYPE = CvType.CV_16UC1;  // short single channel matrix
 
     public SampleGrid(int repW, int repH, float reductionFactor)
     {
         super(repW, repH, reductionFactor);
         // create samples matrix
-        matSamples = Mat.zeros(h, w, CvType.CV_16UC1);    
+        matSamples = Mat.zeros(h, w, TYPE);    
         // create sampled window (negative values for non-existant window)
         sampledWindow = new Rect();    
         focusSamples = 0;
@@ -54,6 +55,14 @@ public class SampleGrid extends Grid implements Cloneable
     public Rect getSampledWindow() {return sampledWindow;}
     // get the number of samples of the focused node
     public short getFocusSamples() {return focusSamples;}
+    
+    // get mask version of samples matrix
+    public Mat getSamplesMask()
+    {
+        Mat mask = new Mat(matSamples.size(), CvType.CV_8UC1);
+        matSamples.convertTo(mask, CvType.CV_8UC1);
+        return mask;
+    }
     
     // set grid focus to a represented matrix position 
     // it internally gets the number of samples in the focused node
