@@ -29,7 +29,7 @@ public class BlocksDrawerTest
     
     @BeforeClass
     public static void setUpClass() {
-        NativeOpenCV.load();
+        NativeOpenCV2.load();
         display = new Display("BlocksDrawerTest");
     }
 
@@ -42,7 +42,7 @@ public class BlocksDrawerTest
     
     @Before
     public void setUp() {
-        blocksDrawer = new BlocksDrawer(200, 100, 3);        
+        blocksDrawer = new BlocksDrawer(200, 200, 4);        
     }
     
     @After
@@ -63,6 +63,7 @@ public class BlocksDrawerTest
         blocksDrawer.fillBlock(0, 0);
         blocksDrawer.fillBlock(1, 1);
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -76,6 +77,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillTop();   
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -89,6 +91,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillBottom();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -102,6 +105,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillLeft();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -115,6 +119,7 @@ public class BlocksDrawerTest
         
         blocksDrawer.fillRight();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -128,6 +133,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillTopLeft();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -141,6 +147,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillTopRight();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -154,6 +161,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillBottomLeft();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }
@@ -167,6 +175,7 @@ public class BlocksDrawerTest
 
         blocksDrawer.fillBottomRight();
         display.addWindow(blocksDrawer.getImage());
+        System.out.println("drawn window = " + blocksDrawer.getDrawnWindow().toString());
 
         Assert.assertTrue(true);
     }

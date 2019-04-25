@@ -33,7 +33,7 @@ public class MathDrawerTest
     
     @BeforeClass
     public static void setUpClass() {
-        NativeOpenCV.load();
+        NativeOpenCV2.load();
         display = new Display("MathDrawerTest");
     }
         

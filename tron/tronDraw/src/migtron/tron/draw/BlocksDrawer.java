@@ -14,22 +14,24 @@ import org.opencv.core.Rect;
 
 public class BlocksDrawer extends Drawer
 {
-    private int n;  // granularity of the grid configuration
+    private int granularity;  // granularity of the grid configuration
     private int blockWidth;
     private int blockHeight;
+    private Rect drawnWindow;   // window enclosig all drawn blocks
     
-    public BlocksDrawer(int w, int h, int n)
+    public BlocksDrawer(int w, int h, int granularity)
     {
         super(w, h);
         // safety check
-        if (n < w && n < h)
-            this.n = n;
+        if (granularity < w && granularity < h)
+            this.granularity = granularity;
         else
-            this.n = 1;
+            this.granularity = 1;
 
         // compute blocks size
-        blockWidth = w/n;
-        blockHeight = h/n;
+        blockWidth = w/granularity;
+        blockHeight = h/granularity;
+        drawnWindow = null;
     }
 
     public BlocksDrawer(int w, int h)
@@ -38,18 +40,22 @@ public class BlocksDrawer extends Drawer
         this(w, h, 2);
     }
       
-    public int getGranularity() {return n;}
+    public int getGranularity() {return granularity;}
+    
+    public Rect getDrawnWindow() {return drawnWindow;}
     
     // fill block at specified position
     public boolean fillBlock(int row, int col)
     {
         // safety check
-        if (row < n && col < n)
+        if (row < granularity && col < granularity)
         {
             int x = col * blockWidth;
             int y = row * blockHeight;
             Rect window = new Rect(x, y, blockWidth, blockHeight);
             MathDrawer.drawFilledRectangle(mat, window, color);
+            // update drawn window with new block
+            updateDrawnWindow(window);
             return true;
         }
         else
@@ -62,29 +68,29 @@ public class BlocksDrawer extends Drawer
     // fill all top blocks
     public void fillTop()
     {
-        for (int col=0; col<n; col++)
+        for (int col=0; col<granularity; col++)
             fillBlock(0, col);
     }
 
     // fill all bottom blocks
     public void fillBottom()
     {
-        for (int col=0; col<n; col++)
-            fillBlock(n-1, col);
+        for (int col=0; col<granularity; col++)
+            fillBlock(granularity-1, col);
     }
 
     // fill all left blocks
     public void fillLeft()
     {
-        for (int row=0; row<n; row++)
+        for (int row=0; row<granularity; row++)
             fillBlock(row, 0);
     }
 
     // fill all right blocks
     public void fillRight()
     {
-        for (int row=0; row<n; row++)
-            fillBlock(row, n-1);
+        for (int row=0; row<granularity; row++)
+            fillBlock(row, granularity-1);
     }
     
     // fill block in top left corner
@@ -96,18 +102,33 @@ public class BlocksDrawer extends Drawer
     // fill block in top right corner
     public void fillTopRight()
     {
-        fillBlock(0, n-1);
+        fillBlock(0, granularity-1);
     }
 
     // fill block in bottom left corner
     public void fillBottomLeft()
     {
-        fillBlock(n-1, 0);
+        fillBlock(granularity-1, 0);
     }
 
     // fill block in bottom right corner
     public void fillBottomRight()
     {
-        fillBlock(n-1, n-1);
+        fillBlock(granularity-1, granularity-1);
     }    
+    
+    private void updateDrawnWindow(Rect window)
+    {
+        if (drawnWindow == null)
+            drawnWindow = window.clone();
+        else
+            drawnWindow = Window2.getUnion(drawnWindow, window);
+    }
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        drawnWindow = null;
+    }
 }
