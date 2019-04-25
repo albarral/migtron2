@@ -9,9 +9,7 @@ import java.util.List;
 
 import migtron.tron.draw.BlocksDrawer;
 import migtron.tron.draw.DrawUtils;
-import migtron.tron.draw.MathDrawer;
 import migtron.tron.math.Ellipse;
-import migtron.tron.math.color.Colors;
 import migtron.tron.util.display.Display;
 
 import org.junit.After;
@@ -38,7 +36,7 @@ public class MaskTest
     private List<Ellipse> listEllipses;     // ellipses of original masks
     private List<Ellipse> listEllipses2;    // ellipses of result masks
     private BlocksDrawer blocksDrawer;  // blocks drawing utility
-    private MathDrawer mathDrawer;      // ellipses drawing utility
+    private int type;    // type of matrix to show results
     
     public MaskTest() {
     }
@@ -61,8 +59,7 @@ public class MaskTest
         w = 200;
         h = 100;
         blocksDrawer = new BlocksDrawer(w, h, 3);        
-        mathDrawer = new MathDrawer(w, h);
-        mathDrawer.setStandardColor(Colors.eColor.eCOLOR_GREY);        
+        type = blocksDrawer.getMat().type();
         // create lists of masks
         listMasks = new ArrayList<>();
         listMasks2 = new ArrayList<>();      
@@ -145,13 +142,13 @@ public class MaskTest
 
         // top left corner mask
         blocksDrawer.fillBlock(0, 0);        
-        Mask mask1 = new Mask(blocksDrawer.getMat());
+        Mask mask1 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
         listMasks.add(mask1);
 
         // center block mask
         blocksDrawer.clear();
         blocksDrawer.fillBlock(1, 1);        
-        Mask mask2 = new Mask(blocksDrawer.getMat());
+        Mask mask2 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
         listMasks.add(mask2);
         
         // merge 1 & 2 (with cloned 1)
@@ -177,13 +174,13 @@ public class MaskTest
 
         // top filled mask
         blocksDrawer.fillTop();
-        Mask mask1 = new Mask(blocksDrawer.getMat());
+        Mask mask1 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
         listMasks.add(mask1);
 
         // right filled mask
         blocksDrawer.clear();
         blocksDrawer.fillRight();
-        Mask mask2 = new Mask(blocksDrawer.getMat());
+        Mask mask2 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
         listMasks.add(mask2);
         
         // intersect 1 & 2 (with cloned 1)
@@ -200,6 +197,38 @@ public class MaskTest
         Assert.assertTrue(mass3 == mass1/3 && mass3 == mass2/3);
     }  
 
+    /**
+     * Test of and method, of class Mask.
+     */
+    @Test
+    public void testAnd() {
+        System.out.println("and");
+
+        // top filled mask
+        blocksDrawer.fillTop();
+        Mask mask1 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
+        listMasks.add(mask1);
+
+        // right filled mask
+        blocksDrawer.clear();
+        blocksDrawer.fillRight();
+        Mask mask2 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
+        listMasks.add(mask2);
+        
+        // intersect 1 & 2 (with cloned 1)
+        Mask mask3 = (Mask)mask1.clone();                
+        mask3.and(mask2);        
+        listMasks2.add(mask3);
+
+        showMasks("and");
+
+        int mass1 = mask1.computeMass();
+        int mass2 = mask2.computeMass();
+        int mass3 = mask3.computeMass();
+        
+        Assert.assertTrue(mass3 == mass1/3 && mass3 == mass2/3);
+    }  
+    
     // process original masks (computing their ellipses)
     private void processMasks()
     {
@@ -222,14 +251,23 @@ public class MaskTest
     private void showMasks(String title)
     {
         Display display = new Display(title);        
+
         for (Mask mask : listMasks)
-        {
-            display.addWindow(DrawUtils.cvMask2Java(mask.getMat()));            
-        }
+            displayMask(display, mask);
+
         for (Mask mask : listMasks2)
-        {
-            display.addWindow(DrawUtils.cvMask2Java(mask.getMat()));            
-        }
+            displayMask(display, mask);
+    }
+
+    // display mask in display
+    private void displayMask(Display display, Mask mask)
+    {
+        // copy mask in big frame image
+        Mat matShow = Mat.zeros(h, w, type);
+        Mat mat2 = matShow.submat(mask.getWindow());
+        mask.getMat().copyTo(mat2);
+        
+        display.addWindow(DrawUtils.cvMask2Java(matShow));            
     }
 
 }
