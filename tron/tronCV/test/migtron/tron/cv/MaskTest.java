@@ -10,6 +10,7 @@ import java.util.List;
 import migtron.tron.draw.BlocksDrawer;
 import migtron.tron.draw.DrawUtils;
 import migtron.tron.math.Ellipse;
+import migtron.tron.math.color.Colors;
 import migtron.tron.util.display.Display;
 
 import org.junit.After;
@@ -227,6 +228,34 @@ public class MaskTest
         int mass3 = mask3.computeMass();
         
         Assert.assertTrue(mass3 == mass1/3 && mass3 == mass2/3);
+    }  
+
+    /**
+     * Test of and method, of class Mask.
+     */
+    @Test
+    public void testBinarize() {
+        System.out.println("binarize");
+
+        // create mask with top (white) and bottom (grey) filled
+        blocksDrawer.fillTop();
+        blocksDrawer.setStandardColor(Colors.eColor.eCOLOR_GREY);
+        blocksDrawer.fillBottom();
+        Mask mask1 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
+        listMasks.add(mask1);
+        
+        int mass1 = mask1.computeMass();
+        
+        // binarize clone of mask1
+        Mask mask2 = (Mask)mask1.clone();                
+        mask2.binarize(129);
+        listMasks2.add(mask2);
+
+        int mass2 = mask2.computeMass();
+        
+        showMasks("binarize");
+
+        Assert.assertTrue(mass2 == mass1/2);
     }  
     
     // process original masks (computing their ellipses)

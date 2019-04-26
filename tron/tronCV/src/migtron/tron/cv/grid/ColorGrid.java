@@ -6,6 +6,7 @@ package migtron.tron.cv.grid;
 
 import java.awt.Point;
 import migtron.tron.cv.AverageCV;
+import migtron.tron.cv.Mask;
 import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
 import migtron.tron.math.Vec3i;
@@ -29,12 +30,13 @@ public class ColorGrid extends SampleGrid implements Cloneable
 {
     protected Mat matColor;   // RGB color matrix (float precision)
     private Vec3f focusColor;     // RGB color in the focused node
+    private final int TYPE = CvType.CV_32FC3;  // float 3 channel matrix
 
     public ColorGrid(int repW, int repH, float reductionFactor)
     {
         super(repW, repH, reductionFactor);
         // create grid sized matrix to store the node colors
-        matColor = Mat.zeros(h, w, CvType.CV_32FC3);    
+        matColor = Mat.zeros(h, w, TYPE);    
         focusColor = new Vec3f();
     }    
 
@@ -111,15 +113,19 @@ public class ColorGrid extends SampleGrid implements Cloneable
 
     /**
      * Merge this color grid with another one (of the same size). 
-     * It adds both color matrices and the inherited sample grids. Only done if both grids have the same size.
+     * It merges both color matrices, averaging the coincident color nodes. It also merges the internal sample grids. Only done if both grids have the same size.
      * @return true if merge done, false otherwise
      */
     public boolean merge(ColorGrid colorGrid)
     {
+        // get masks of both grids
+//        Mask mask1 = new Mask(getSamplesMask(), sampledWindow);
+//        Mask mask2 = new Mask(colorGrid.getSamplesMask(), colorGrid.sampledWindow);
+
         // skip if grids have different sizes
         if (super.merge(colorGrid))
         {
-            // roi both color matrices
+            // roi both color matrices with merged sampled window
             Mat matColor1 = matColor.submat(sampledWindow);
             Mat matColor2 = colorGrid.matColor.submat(sampledWindow);
 

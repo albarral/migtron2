@@ -111,14 +111,16 @@ public class SampleGrid extends Grid implements Cloneable
             return false;
 
         // compute union of sampled windows
-        sampledWindow = Window.getUnion(sampledWindow, sampleGrid.sampledWindow);
+        Rect union = Window.getUnion(sampledWindow, sampleGrid.sampledWindow);
 
         // roi both samples matrices
-        Mat matSamples1 = matSamples.submat(sampledWindow);
-        Mat matSamples2 = sampleGrid.matSamples.submat(sampledWindow);
+        Mat mat1 = matSamples.submat(union);
+        Mat mat2 = sampleGrid.matSamples.submat(union);
 
         // add both samples matrices (leaving result in this grid)
-        Core.add(matSamples1, matSamples2, matSamples1);
+        Core.add(mat1, mat2, mat1);
+        // and update sampled window
+        sampledWindow = union;
         return true;
     }
     

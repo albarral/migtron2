@@ -5,7 +5,6 @@
 package migtron.tron.cv;
 
 import java.awt.geom.Point2D.Float;
-import java.awt.Point;
 
 import migtron.tron.math.Ellipse;
 import migtron.tron.math.Vec3f;
@@ -14,6 +13,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -171,7 +171,7 @@ public class Mask implements Cloneable
         // create empty union matrix
         Mat matUnion = Mat.zeros(union.height, union.width, TYPE); 
         // translate both windows to new coordinate system (the union window)
-        Point newOrigin = new Point(union.x, union.y);
+        Point newOrigin = union.tl();
         Rect window1 = Window.translateAxes(window, newOrigin);
         Rect window2 = Window.translateAxes(mask.window, newOrigin);
 
@@ -196,10 +196,8 @@ public class Mask implements Cloneable
         // create empty intersection matrix
         Mat matIntersection = Mat.zeros(intersection.height, intersection.width, TYPE); 
         // translate intersection window to both coordinate systems 
-        Point origin1 = new Point(window.x, window.y);
-        Point origin2 = new Point(mask.window.x, mask.window.y);
-        Rect window1 = Window.translateAxes(intersection, origin1);
-        Rect window2 = Window.translateAxes(intersection, origin2);
+        Rect window1 = Window.translateAxes(intersection, window.tl());
+        Rect window2 = Window.translateAxes(intersection, mask.window.tl());
         
         Mat mat1 = mat.submat(window1);    
         Mat mat2 = mask.mat.submat(window2);        
@@ -220,12 +218,9 @@ public class Mask implements Cloneable
         // create empty union matrix
         Mat matUnion = Mat.zeros(union.height, union.width, TYPE); 
         // translate intersection window to the 3 coordinate systems (2 sources and destination)
-        Point origin1 = new Point(window.x, window.y);
-        Point origin2 = new Point(mask.window.x, mask.window.y);
-        Point origin3 = new Point(union.x, union.y);
-        Rect window1 = Window.translateAxes(intersection, origin1);
-        Rect window2 = Window.translateAxes(intersection, origin2);
-        Rect window3 = Window.translateAxes(intersection, origin3);
+        Rect window1 = Window.translateAxes(intersection, window.tl());
+        Rect window2 = Window.translateAxes(intersection, mask.window.tl());
+        Rect window3 = Window.translateAxes(intersection, union.tl());
         
         Mat mat1 = mat.submat(window1);    
         Mat mat2 = mask.mat.submat(window2);        

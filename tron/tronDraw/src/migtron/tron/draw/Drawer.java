@@ -22,10 +22,11 @@ public class Drawer
     protected Mat mat;       // image matrix    
     protected Scalar color;   // real Color   
     private Colors.eColor stdColor; // standard color
+    private final int TYPE = CvType.CV_8UC1;  // mask type matrix
     
     public Drawer(int w, int h)
     {
-        mat = Mat.zeros(h, w, CvType.CV_8UC1);
+        mat = Mat.zeros(h, w, TYPE);
         setStandardColor(Colors.eColor.eCOLOR_WHITE);
     }        
         

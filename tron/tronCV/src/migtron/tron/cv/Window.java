@@ -71,10 +71,16 @@ public class Window
         return new Rect(point.x, point.y, window.width, window.height);        
     }
     
-    // translate given window to new axes origin
+    // translate given window to new axes origin (java point form)
     public static Rect translateAxes(Rect window, Point newOrigin)
     {
         return new Rect(window.x - newOrigin.x, window.y - newOrigin.y, window.width, window.height);        
+    }
+
+    // translate given window to new axes origin (cv point form)
+    public static Rect translateAxes(Rect window, org.opencv.core.Point newOrigin)
+    {
+        return new Rect(window.x - (int)newOrigin.x, window.y - (int)newOrigin.y, window.width, window.height);        
     }
     
     // compute the overlaped area of two windows
