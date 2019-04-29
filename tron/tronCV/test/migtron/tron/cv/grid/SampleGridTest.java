@@ -4,6 +4,7 @@
  */
 package migtron.tron.cv.grid;
 
+import migtron.tron.cv.Mask;
 import migtron.tron.cv.NativeOpenCV;
 
 import org.junit.After;
@@ -96,6 +97,27 @@ public class SampleGridTest
         Assert.assertEquals(expResult, samples);
     }
 
+    /**
+     * Test of getSamplesMask method, of class SampleGrid.
+     */
+    @Test
+    public void testGetSamplesMask() 
+    {
+        System.out.println("getSamplesMask");
+        
+        int x0 = 0;
+        int y0 = 20;
+        int width = 35;
+        int height = 35;
+        doWalk(sampleGrid, x0, y0, width, height);
+        System.out.println("> grid \n" + sampleGrid.toString());                    
+     
+        Mask mask = sampleGrid.getSamplesMask();
+        System.out.println("> mask \n" + mask.getMat().dump());                    
+                
+        Assert.assertTrue(true);
+    }
+    
     /**
      * Test of merge method, of class SampleGrid.
      */

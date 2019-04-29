@@ -55,4 +55,25 @@ public class Average3f extends Vec3f
     {
         updateWithSample(newValue, 1);
     }
+    
+   // calculates the average of 2 vectors
+    public static Vec3f computeAverage(Vec3f vec1, Vec3f vec2)
+    {
+        Vec3f avg = new Vec3f();
+        for (int i=0; i<SIZE; i++)
+            avg.data[i] = (vec1.data[i] + vec2.data[i]) * 0.5f;
+
+        return avg;
+    }
+    
+   // calculates the average of 2 vectors
+    public static Vec3f computeAverage(Vec3f vec1, int numSamples, Vec3f vec2)
+    {
+        Vec3f avg = (Vec3f)vec1.clone();
+        double alpha = 1.0 / (numSamples + 1);        
+        for (int i=0; i<SIZE; i++)
+            avg.data[i] += alpha * (vec2.data[i] - vec1.data[i]);
+
+        return avg;
+    }
 }

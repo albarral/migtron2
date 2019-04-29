@@ -5,6 +5,7 @@
 package migtron.tron.cv.grid;
 
 import migtron.tron.cv.NativeOpenCV;
+import migtron.tron.math.Average3f;
 import migtron.tron.math.Vec3f;
 import migtron.tron.math.Vec3i;
 import migtron.tron.math.color.Colors;
@@ -119,20 +120,18 @@ public class ColorGridTest
 
         // check merged samples in the shared node
         colorGrid.focus(x2, y2);
-        Vec3i color = new Vec3i(colorGrid.getFocusColor());
-
-        Vec3i yellow = Colors.getRGB(Colors.eColor.eCOLOR_YELLOW);
+        Vec3f avg = Average3f.computeAverage(color1, color2);
         
         System.out.println("color1 = " + color1);                    
         System.out.println("color2 = " + color2);                    
-        System.out.println("merged color = " + color);                            
-        Assert.assertEquals(yellow, color);
+        System.out.println("merged color = " + colorGrid.getFocusColor());                            
+        Assert.assertEquals(avg, colorGrid.getFocusColor());
     }
     
     // walks a sampled grid adding color samples to all points in a specified window (defined by a top-left point (x0, y0) and with w x h dimensions)
     private void doWalk(ColorGrid colorGrid, int x0, int y0, int w, int h, Vec3i color)
     {
-        System.out.println("walk grid from (" + x0 + "," + y0 + "), w=" + w + ", h=" + h + ", color=" + color);                    
+        //System.out.println("walk grid from (" + x0 + "," + y0 + "), w=" + w + ", h=" + h + ", color=" + color);                    
         int x1 = x0+w;
         int y1 = y0+h;
         for (int x=x0; x<x1; x++)

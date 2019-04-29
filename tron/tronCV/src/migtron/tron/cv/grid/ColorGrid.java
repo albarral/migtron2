@@ -81,9 +81,7 @@ public class ColorGrid extends SampleGrid implements Cloneable
     public void addColorSample(Vec3i color)
     {
         // set the node's average color with the new sample
-        Average3f avgColor = new Average3f(focusColor, focusSamples);
-        avgColor.updateWithSample(color);
-        focusColor = (Vec3f)avgColor;
+        focusColor = Average3f.computeAverage(focusColor, focusSamples, new Vec3f(color));
         matColor.put(focus.y, focus.x, focusColor.data);        
         // and update the node samples number
         addSample();
@@ -118,20 +116,27 @@ public class ColorGrid extends SampleGrid implements Cloneable
      */
     public boolean merge(ColorGrid colorGrid)
     {
-        // get masks of both grids
-//        Mask mask1 = new Mask(getSamplesMask(), sampledWindow);
-//        Mask mask2 = new Mask(colorGrid.getSamplesMask(), colorGrid.sampledWindow);
+        // compute intersection mask of both sample grids
+        Mask maskIntersection = getSamplesMask();
+        maskIntersection.intersect(colorGrid.getSamplesMask());
 
-        // skip if grids have different sizes
+        // merge sample grids 
         if (super.merge(colorGrid))
         {
-            // roi both color matrices with merged sampled window
-            Mat matColor1 = matColor.submat(sampledWindow);
-            Mat matColor2 = colorGrid.matColor.submat(sampledWindow);
-
-            // compute average of both color matrices (leaving result in this grid)
-            Core.add(matColor1, matColor2, matColor1);
-            Core.multiply(matColor1, new Scalar(0.5, 0.5, 0.5), matColor1);
+            // add both color matrices (using roi on union window) 
+            // note: the new sampled window is the union window
+            Mat mat1 = matColor.submat(sampledWindow);
+            Mat mat2 = colorGrid.matColor.submat(sampledWindow);
+            Core.add(mat1, mat2, mat1);            
+            
+            // compute the average in intersecting nodes (using roi on intersection window)
+            // the intersection mask is used to only affect intersecting nodes
+            Mat mat3 = matColor.submat(maskIntersection.getWindow());
+            Mat mat4 = Mat.zeros(mat3.size(), mat3.type());
+            
+            mat3.copyTo(mat4, maskIntersection.getMat());
+            Core.multiply(mat4, new Scalar(0.5, 0.5, 0.5), mat4);
+            mat4.copyTo(mat3, maskIntersection.getMat());
             return true;
         }
         else

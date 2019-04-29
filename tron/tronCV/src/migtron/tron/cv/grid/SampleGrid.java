@@ -5,6 +5,7 @@
 package migtron.tron.cv.grid;
 
 import java.awt.Point;
+import migtron.tron.cv.Mask;
 import migtron.tron.cv.Window;
 
 import org.opencv.core.Core;
@@ -57,10 +58,17 @@ public class SampleGrid extends Grid implements Cloneable
     public short getFocusSamples() {return focusSamples;}
     
     // get mask version of samples matrix
-    public Mat getSamplesMask()
+    public Mask getSamplesMask()
     {
-        Mat mask = new Mat(matSamples.size(), CvType.CV_8UC1);
-        matSamples.convertTo(mask, CvType.CV_8UC1);
+        // create destination matrix (mask type)
+        Mat matMask = Mat.zeros(matSamples.size(), CvType.CV_8UC1);
+        // convert samples to mask
+        Mat mat1 = matSamples.submat(sampledWindow);
+        Mat mat2 = matMask.submat(sampledWindow);
+        mat1.convertTo(mat2, CvType.CV_8UC1);
+        // create mask object & binarize it
+        Mask mask = new Mask(matMask, sampledWindow);
+        mask.binarize(1);
         return mask;
     }
     
