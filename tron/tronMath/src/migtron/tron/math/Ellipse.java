@@ -16,12 +16,12 @@ import java.awt.Point;
 
 public class Ellipse implements Cloneable
 {
-    protected Float pos;               // centroid (x,y)
-    protected Vec3f covs;             // cxx, cyy, cxy	
+    private Float pos;               // centroid (x,y)
+    private Vec3f covs;             // cxx, cyy, cxy	
     // main axes (automatically computed)
-    protected float width;            // main axis radial size
-    protected float height;           // secondary axis radial size
-    protected float angle;            // angle of main axis (degrees, counter clockwise direction, [-90, 90])
+    private float width;            // main axis radial size
+    private float height;           // secondary axis radial size
+    private float angle;            // angle of main axis (degrees, counter clockwise direction, [-90, 90])
     
     public Ellipse(Float pos, Vec3f covs)
     {
@@ -73,16 +73,7 @@ public class Ellipse implements Cloneable
                 height == ellipse.height && 
                 angle == ellipse.angle);
     }
-    
-    public void copy(Ellipse ellipse)
-    {
-        pos = (Float)ellipse.pos.clone();
-        covs = (Vec3f)ellipse.covs.clone();            
-        width = ellipse.width;
-        height = ellipse.height;
-        angle = ellipse.angle;
-    }
-    
+        
     public Float getPosition() {return pos;};
     public Point getPositionPoint() {return Coordinates.float2Point(pos);};
     public Vec3f getCovariances() {return covs;};
@@ -146,6 +137,7 @@ public class Ellipse implements Cloneable
     }
 
     // merge given ellipse into this ellipse combining their covariances and centroids in a ponderated way (using weights) 
+    // w1 + w2 must be 1
     public void merge(Ellipse ellipse, float w1, float w2)
     {
         Float pos2 = ellipse.getPosition();
