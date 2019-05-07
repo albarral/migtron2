@@ -5,28 +5,34 @@
 package migtron.tron.data;
 
 import migtron.tron.cv.Mask;
-import migtron.tron.math.Ellipse;
-
+import migtron.tron.math.Vec3f;
+import migtron.tron.math.color.Color;
 import org.opencv.core.Mat;
 
 /**
 * This class represents a 2D body. 
-* It's a ColorBlob with a mask and a location window (locates the body in the image)
+* It's a Blob with a mask and a location window (locates the body in the image)
 * @author albarral
  */
 
-public class Body extends ColorBlob implements Cloneable
+public class Body extends Blob implements Cloneable
 {
     public static final short BODY_VALUE = 255;
     public static final short BORDER_VALUE = 1;
     protected Mask mask;       // body mask
 
-    public Body(ColorBlob colorBlob, Mask mask)
+    public Body(Blob blob, Mask mask)
     {
-        super((Blob)colorBlob, colorBlob.rgbColor);        
+        super(blob.getEllipse(), blob.getMass(), blob.getColor());        
         this.mask = (Mask)mask.clone();
     }    
-                
+
+    public Body(Mask mask, Vec3f rgbColor)
+    {
+        super(mask.computeEllipse(), mask.computeMass(), new Color(rgbColor));        
+        this.mask = (Mask)mask.clone();
+    }    
+    
     @Override
     public Object clone()
     {
@@ -60,11 +66,10 @@ public class Body extends ColorBlob implements Cloneable
 
     public void merge(Body oBody)
     {
-        // merge color blob part
-        super.merge((ColorBlob)oBody);
+        // merge blob part
+        super.merge((Blob)oBody);
         // merge mask    
         mask.merge(oBody.mask);
-        // no need to update the blob (it's been merged internally)
     }
 
     // compute the overlapped area between this body and another one
@@ -78,10 +83,8 @@ public class Body extends ColorBlob implements Cloneable
     // recomputes the blob from the body's mask
     private void updateBlob()
     {
-        Ellipse ellipse = mask.computeEllipse();
-        super.copy(ellipse);
+        setEllipse(mask.computeEllipse());
         setMass(mask.computeMass());
-        updateShapeFactor();
     }
     
     @Override

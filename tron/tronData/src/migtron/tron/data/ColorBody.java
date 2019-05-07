@@ -5,7 +5,6 @@
 package migtron.tron.data;
 
 import migtron.tron.cv.grid.ColorGrid;
-import migtron.tron.math.Vec3f;
 
 /**
 * This class represents a 2D colored body. 
@@ -19,7 +18,7 @@ public class ColorBody extends Body implements Cloneable
 
     public ColorBody(Body body, ColorGrid colorGrid)
     {
-        super((ColorBlob)body, body.mask);        
+        super((Blob)body, body.mask);        
         this.colorGrid = (ColorGrid)colorGrid.clone();
     }    
             
@@ -61,8 +60,7 @@ public class ColorBody extends Body implements Cloneable
     // recompute the blob color from the color grid
     private void updateBlobColor()    
     {
-        Vec3f meanColor = colorGrid.getGlobalColor();
-        this.setRGB(meanColor);
+        color.setRGB(colorGrid.getGlobalColor());
     }
     
     @Override

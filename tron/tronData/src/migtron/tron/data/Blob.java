@@ -27,9 +27,9 @@ public class Blob implements Cloneable
     public Blob(Ellipse ellipse, int mass, Color color)
     {
         this.ellipse = (Ellipse)ellipse.clone();
-        this.mass = mass;   
         // shape factor automatically computed  
         updateShapeFactor();        
+        this.mass = mass;   
         this.color = (Color)color.clone();
     }    
 
@@ -66,7 +66,20 @@ public class Blob implements Cloneable
     public int getMass() {return mass;}
     public float getShapeFactor() {return shapeFactor;}
     public Color getColor() {return color;}
+    
+    public void setEllipse(Ellipse ellipse)
+    {
+        this.ellipse = (Ellipse)ellipse.clone();
+        // shape factor automatically computed  
+        updateShapeFactor();        
+    }    
+
     public void setMass(int value) {mass = value;}
+
+    public void setColor(Color color)
+    {
+        this.color = (Color)color.clone();
+    }
     
     // merge this blob with another blob
     public void merge(Blob blob2)
@@ -79,8 +92,8 @@ public class Blob implements Cloneable
             float w2 = (float)blob2.mass / newMass;
             ellipse.merge(blob2.ellipse, w1, w2);
             // update mass and shape factor
-            mass = newMass;      
             updateShapeFactor(); 
+            mass = newMass;      
             // merge colors
             color.merge(blob2.color, mass, blob2.mass);
         }
@@ -94,7 +107,7 @@ public class Blob implements Cloneable
     }
 
     // automatic computation of the shape factor from the ellipse main axes
-    protected void updateShapeFactor()
+    private void updateShapeFactor()
     {
         shapeFactor = ellipse.computeShapeFactor();        
     }

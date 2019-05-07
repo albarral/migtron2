@@ -40,7 +40,6 @@ public class Color implements Cloneable
       }        
     }
         
-
     public Vec3f getRGB() {return rgbColor;};
     public Vec3f getHSV() {return hsvColor;};    
 
