@@ -42,10 +42,10 @@ public class Drawer
         return DrawUtils.cvMask2Java(mat);
     }
 
-    // set the base image for drawing
+    // set the base image for drawing (just shares the image, it doesn't clone for its own)
     public void setBase(Mat mat)
     {
-        this.mat = mat.clone();
+        this.mat = mat;
     }
     
     // set the real color for drawing

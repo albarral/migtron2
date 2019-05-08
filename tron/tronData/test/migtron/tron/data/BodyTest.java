@@ -11,6 +11,7 @@ import migtron.tron.cv.Mask;
 import migtron.tron.cv.NativeOpenCV;
 import migtron.tron.draw.BlocksDrawer;
 import migtron.tron.draw.DrawUtils;
+import migtron.tron.draw.MathDrawer;
 import migtron.tron.math.Vec3f;
 import migtron.tron.math.Vec3i;
 import migtron.tron.math.color.Colors;
@@ -36,6 +37,7 @@ public class BodyTest
     private int h;
     private List<Body> listBodies;    // list of bodies
     private BlocksDrawer blocksDrawer;  // blocks drawing utility
+    private MathDrawer mathDrawer;      // ellipses drawing utility
     private int type;    // type of matrix to show results
     
     public BodyTest() {
@@ -57,6 +59,8 @@ public class BodyTest
         w = 200;
         h = 100;
         blocksDrawer = new BlocksDrawer(w, h, 3);        
+        mathDrawer = new MathDrawer(w, h);
+        mathDrawer.setStandardColor(Colors.eColor.eCOLOR_GREY);        
         type = blocksDrawer.getMat().type();
         listBodies = new ArrayList<>();
 }
@@ -129,34 +133,25 @@ public class BodyTest
     public void testMerge() {
         System.out.println("merge");
 
-        Vec3i red = Colors.getRGB(Colors.eColor.eCOLOR_RED);                
-        Vec3i green = Colors.getRGB(Colors.eColor.eCOLOR_GREEN);
+        // create body (top left block)
+        listBodies.add(createBody(0, 0, Colors.eColor.eCOLOR_RED));
+        // create body (center block)
+        listBodies.add(createBody(1, 1, Colors.eColor.eCOLOR_GREEN));
+        // create body (bottom right block)
+        listBodies.add(createBody(2, 2, Colors.eColor.eCOLOR_GREEN));
 
-        // top left corner mask
-        blocksDrawer.fillBlock(0, 0);        
-        Mask mask1 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
-        Body body1 = new Body(mask1, new Vec3f(green));
-
-        // center block mask
-        blocksDrawer.clear();
-        blocksDrawer.fillBlock(1, 1);        
-        Mask mask2 = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
-        Body body2 = new Body(mask2, new Vec3f(red));
+        // compute sum of original masses
+        int mass = 0;
+        for (Body body : listBodies)
+            mass += body.getMass();
         
-        // merge 1 & 2 (with cloned 1)
-        Body body3 = (Body)body1.clone();
-        body3.merge(body2);        
-
-        listBodies.add(body1);
+        // merge bodies
+        Body body2 = mergeBodies();
         listBodies.add(body2);
-        listBodies.add(body3);
-        showBodies("merge");
 
-        int mass1 = body1.getMass();
-        int mass2 = body2.getMass();
-        int mass3 = body3.getMass();
+        showBodies("merge", true);
         
-        Assert.assertTrue((mass1 + mass2) == mass3);
+        Assert.assertTrue(mass == body2.getMass());
     }
 
     /**
@@ -172,24 +167,60 @@ public class BodyTest
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+    }  
+
+    // creates body with block in given position and color
+    private Body createBody(int x, int y, Colors.eColor eColor)
+    {
+        Vec3i color = Colors.getRGB(eColor);                
+
+        blocksDrawer.clear();
+        blocksDrawer.fillBlock(y, x);        
+        Mask mask = new Mask(blocksDrawer.getMat(), blocksDrawer.getDrawnWindow());
+        return new Body(mask, new Vec3f(color));        
     }
-  
+
+    // merge bodies in list
+    private Body mergeBodies()
+    {
+        if (listBodies.isEmpty())
+            return null;
+
+        Body body2 = null;
+        // merge all bodies in the list (into a new body)
+        for (Body body : listBodies)
+        {
+            if (body2 == null)
+                body2 = (Body)body.clone();
+            else
+                body2.merge(body);        
+        }
+
+        return body2;        
+    }
+
     // show bodies in a display
-    private void showBodies(String title)
+    private void showBodies(String title, boolean showEllipses)
     {
         Display display = new Display(title);        
 
         for (Body body : listBodies)
-            displayBody(display, body);
+            displayBody(display, body, showEllipses);
     }
 
-    // display mask in display
-    private void displayBody(Display display, Body body)
+    // display body in display (optionally with its representing ellipse)
+    private void displayBody(Display display, Body body, boolean showEllipse)
     {
         // copy mask in big frame image
         Mat matShow = Mat.zeros(h, w, type);
         Mat mat2 = matShow.submat(body.getMask().getWindow());
         body.getMask().getMat().copyTo(mat2);
+        if (showEllipse)
+        {
+            // set mask as base & draw mask
+            mathDrawer.setBase(matShow);
+            mathDrawer.drawEllipse(body.getEllipse());            
+        }
         
         display.addWindow(DrawUtils.cvMask2Java(matShow));            
     }
